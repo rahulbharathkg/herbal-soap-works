@@ -88,6 +88,17 @@ npm install --prefix frontend
 npm start --prefix frontend
 ```
 
+## Continuous Integration
+
+This repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` that runs on `push` and `pull_request` for the `main` and `dev` branches. The workflow performs the following steps:
+
+- Checks out code
+- Sets up Node.js 18
+- Builds the backend (`backend/npm run build`)
+- Builds the frontend (`frontend/npm run build`)
+
+You can customize the workflow to add tests, linting or deployment steps.
+
 ---
 
 Enjoy your animated, modern Herbal Soap Works ecommerce site!
