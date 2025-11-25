@@ -26,24 +26,42 @@ async function seed() {
       console.log('Admin user already exists:', adminEmail);
     }
 
-    // Add sample products
+    // Add real products from business
     const samples = [
       {
-        name: 'Lavender Bliss Soap',
-        description: 'Soothing lavender soap with natural essential oils.',
-        price: 6.5,
+        name: 'Goat Milk Soap',
+        description: 'Luxurious goat milk soap that deeply nourishes and moisturizes your skin. Rich in vitamins and minerals.',
+        price: 80,
         imageUrl: '',
       },
       {
-        name: 'Rose Glow Soap',
-        description: 'Gentle rose-scented soap for radiant skin.',
-        price: 7.0,
+        name: 'Tan Soap',
+        description: 'Natural tan removal soap with herbal extracts. Helps restore your skin\'s natural glow.',
+        price: 80,
         imageUrl: '',
       },
       {
-        name: 'Mint Fresh Soap',
-        description: 'Cooling mint soap to refresh and revitalize.',
-        price: 5.75,
+        name: 'Red Wine Soap',
+        description: 'Anti-aging red wine soap packed with antioxidants. Rejuvenates and revitalizes your skin.',
+        price: 85,
+        imageUrl: '',
+      },
+      {
+        name: 'Charcoal Soap',
+        description: 'Activated charcoal soap for deep cleansing. Removes impurities and detoxifies skin.',
+        price: 80,
+        imageUrl: '',
+      },
+      {
+        name: 'Coffee Honey Soap',
+        description: 'Energizing coffee and honey blend. Exfoliates and brightens your complexion.',
+        price: 80,
+        imageUrl: '',
+      },
+      {
+        name: 'Sandalwood Soap',
+        description: 'Premium sandalwood soap with a calming fragrance. Naturally antiseptic and soothing.',
+        price: 85,
         imageUrl: '',
       },
     ];

@@ -21,36 +21,37 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/', upload.single('file'), (req: Request, res: Response) => {
-  // Allow upload if admin jwt present OR x-sb-secret header matches
+function isAdmin(req: Request, res: Response, next: Function) {
   const auth = req.headers.authorization;
-  let authorized = false;
   if (auth) {
     try {
+      if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET not set');
+        return res.status(500).json({ message: 'Server error' });
+      }
       const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
-      if (payload.role === 'admin') authorized = true;
+      const payload = jwt.verify(token, process.env.JWT_SECRET) as any;
+      if (payload.role === 'admin') {
+        (req as any).user = payload;
+        return next();
+      }
     } catch {
-      authorized = false;
+      return res.status(401).json({ message: 'Unauthorized' });
     }
   }
-  const key = req.headers['x-sb-secret'] as string | undefined;
-  if (!authorized && key && process.env.SB_SECRET && key === process.env.SB_SECRET) authorized = true;
-  if (!authorized) return res.status(401).json({ message: 'Unauthorized' });
+  return res.status(401).json({ message: 'Unauthorized' });
+}
 
+router.post('/', isAdmin, upload.single('file'), (req: Request, res: Response) => {
   if (!req.file) return res.status(400).json({ message: 'No file' });
   const url = `/uploads/${req.file.filename}`;
   // log upload
-  try {
-    const { AdminLog } = require('../entities/AdminLog');
-  } catch {}
-  // save log if possible
   try {
     const adminLogRepo = AppDataSource.getRepository(require('../entities/AdminLog').AdminLog);
     const user = (req as any).user;
     adminLogRepo
       .save(
-        adminLogRepo.create({ action: 'upload', userEmail: user?.email || (req.headers['x-sb-secret'] ? 'sb_secret' : 'unknown'), details: JSON.stringify({ filename: req.file.filename, original: req.file.originalname }) })
+        adminLogRepo.create({ action: 'upload', userEmail: user?.email || 'unknown', details: JSON.stringify({ filename: req.file.filename, original: req.file.originalname }) })
       )
       .catch(() => {});
   } catch (e) {

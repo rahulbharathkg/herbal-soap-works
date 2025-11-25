@@ -19,43 +19,39 @@ async function logAction(action: string, userEmail: string | undefined, details:
   }
 }
 
-function isAdminOrKey(req: Request, res: Response, next: Function) {
-  // Allow access if valid admin JWT OR if x-sb-secret header matches SB_SECRET
+function isAdmin(req: Request, res: Response, next: Function) {
   const auth = req.headers.authorization;
   if (auth) {
     try {
+      if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET not set');
+        return res.status(500).json({ message: 'Server error' });
+      }
       const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+      const payload = jwt.verify(token, process.env.JWT_SECRET) as any;
       if (payload.role === 'admin') {
         (req as any).user = payload;
         return next();
       }
     } catch {
-      // fallthrough to check header
+      return res.status(401).json({ message: 'Unauthorized' });
     }
   }
-
-  const key = req.headers['x-sb-secret'] as string | undefined;
-  if (key && process.env.SB_SECRET && key === process.env.SB_SECRET) {
-    // allow with key
-    return next();
-  }
-
   return res.status(401).json({ message: 'Unauthorized' });
 }
 
 // Admin: Create product
-router.post('/', isAdminOrKey, async (req: Request, res: Response) => {
+router.post('/', isAdmin, async (req: Request, res: Response) => {
   const { name, description, price, imageUrl } = req.body;
   const product = productRepo.create({ name, description, price, imageUrl });
   await productRepo.save(product);
   const user = (req as any).user;
-  await logAction('create_product', user?.email || (req.headers['x-sb-secret'] ? 'sb_secret' : undefined), { id: product.id, name });
+  await logAction('create_product', user?.email, { id: product.id, name });
   res.status(201).json(product);
 });
 
 // Admin: Update product
-router.put('/:id', isAdminOrKey, async (req: Request, res: Response) => {
+router.put('/:id', isAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, description, price, imageUrl } = req.body;
   const product = await productRepo.findOneBy({ id: Number(id) });
@@ -66,18 +62,18 @@ router.put('/:id', isAdminOrKey, async (req: Request, res: Response) => {
   product.imageUrl = imageUrl;
   await productRepo.save(product);
   const user = (req as any).user;
-  await logAction('update_product', user?.email || (req.headers['x-sb-secret'] ? 'sb_secret' : undefined), { id: product.id, name });
+  await logAction('update_product', user?.email, { id: product.id, name });
   res.json(product);
 });
 
 // Admin: Delete product
-router.delete('/:id', isAdminOrKey, async (req: Request, res: Response) => {
+router.delete('/:id', isAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const product = await productRepo.findOneBy({ id: Number(id) });
   if (!product) return res.status(404).json({ message: 'Not found' });
   await productRepo.remove(product);
   const user = (req as any).user;
-  await logAction('delete_product', user?.email || (req.headers['x-sb-secret'] ? 'sb_secret' : undefined), { id: product.id, name: product.name });
+  await logAction('delete_product', user?.email, { id: product.id, name: product.name });
   res.json({ message: 'Deleted' });
 });
 

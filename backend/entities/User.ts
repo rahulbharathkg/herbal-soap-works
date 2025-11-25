@@ -13,4 +13,16 @@ export class User {
 
   @Column({ default: 'user' })
   role: string; // 'user' or 'admin'
+
+  @Column({ default: false })
+  emailVerified: boolean;
+
+  @Column({ nullable: true })
+  verificationToken: string;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string;
+
+  @Column({ nullable: true, type: 'datetime' })
+  resetPasswordExpires: Date;
 }

@@ -9,51 +9,83 @@ import AdminLogs from './pages/AdminLogs';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminOrders from './pages/AdminOrders';
 import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+
+import HomePage from './pages/HomePage';
+import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import { CircularProgress } from '@mui/material';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
+
+interface CustomJwtPayload extends JwtPayload {
+  role?: string;
+  email?: string;
+}
 
 const baseMenu = [
-  { text: 'Home', icon: <SpaIcon /> },
-  { text: 'Products', icon: <SpaIcon /> },
-  { text: 'Cart', icon: <SpaIcon /> },
+  { text: 'Home', icon: <SpaIcon />, path: '/' },
+  { text: 'Products', icon: <SpaIcon />, path: '/products' },
+  { text: 'Cart', icon: <SpaIcon />, path: '/cart' },
 ];
 
 const adminMenu = [
-  { text: 'Admin Dashboard', icon: <SpaIcon /> },
-  { text: 'Products', icon: <SpaIcon /> },
-  { text: 'Orders', icon: <SpaIcon /> },
-  { text: 'Analytics', icon: <SpaIcon /> },
-  { text: 'Logs', icon: <SpaIcon /> },
+  { text: 'Dashboard', icon: <SpaIcon />, path: '/admin' },
+  { text: 'Products', icon: <SpaIcon />, path: '/admin/products' },
+  { text: 'Orders', icon: <SpaIcon />, path: '/admin/orders' },
+  { text: 'Analytics', icon: <SpaIcon />, path: 'admin/analytics' },
+  { text: 'Logs', icon: <SpaIcon />, path: '/admin/logs' },
 ];
 
 function App() {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [page, setPage] = React.useState<'home' | 'admin'>('home');
   const [apiConfig, setApiConfig] = React.useState<{ BACKEND_PORT?: number; USE_SQLITE?: boolean } | null>(null);
-  const [loginOpen, setLoginOpen] = React.useState(false);
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  const [userEmail, setUserEmail] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     fetch('http://localhost:4000/config').then((r) => r.json()).then((c) => setApiConfig(c)).catch(() => setApiConfig(null));
   }, []);
 
-  function decodeToken(token?: string | null) {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout apiConfig={apiConfig} />}>
+          <Route index element={<HomePage />} />
+          <Route path="products" element={<ProductsPage apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+          <Route path="products/:id" element={<ProductDetailPage apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+          <Route path="admin" element={<AdminLayout apiConfig={apiConfig} />}>
+            <Route path="products" element={<AdminProducts apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+            <Route path="logs" element={<AdminLogs apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+            <Route path="analytics" element={<AdminAnalytics apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+            <Route path="orders" element={<AdminOrders apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function Layout({ apiConfig }: { apiConfig: any }) {
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [loginOpen, setLoginOpen] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState<string | null>(null);
+  function decodeToken(token?: string | null): CustomJwtPayload | null {
     if (!token) return null;
     try {
-      const parts = token.split('.');
-      if (parts.length < 2) return null;
-      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      // For frontend, we only decode the token. Verification should happen on the backend.
+      const payload = jwtDecode<CustomJwtPayload>(token);
       return payload;
-    } catch (e) { return null; }
+    } catch (e) {
+      console.error("Error decoding token:", e);
+      return null;
+    }
   }
 
-  const refreshAuthFromStorage = React.useCallback(() => {
+  function refreshAuthFromStorage() {
     const token = localStorage.getItem('hsw_token');
     const payload = decodeToken(token);
     setIsAdmin(!!(payload && payload.role === 'admin'));
     setUserEmail(payload?.email || null);
-  }, []);
+  }
 
   React.useEffect(() => {
     refreshAuthFromStorage();
@@ -101,7 +133,7 @@ function App() {
                     whileHover={{ scale: 1.08, x: 10 }}
                     transition={{ type: 'spring', stiffness: 400 }}
                   >
-                    <ListItemButton onClick={() => { setPage(item.text.toLowerCase().includes('admin') ? 'admin' : 'home'); setDrawerOpen(false); }}>
+                    <ListItemButton component={Link} to={item.path} onClick={() => setDrawerOpen(false)}>
                       <ListItemIcon>{item.icon}</ListItemIcon>
                       <ListItemText primary={item.text} />
                     </ListItemButton>
@@ -112,53 +144,49 @@ function App() {
           </AnimatePresence>
         </Box>
       </Drawer>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 8 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <Typography variant="h2" sx={{ color: '#4a148c', fontWeight: 900, mb: 2, textShadow: '0 4px 24px #fff' }}>
-            Welcome to Herbal Soap Works
-          </Typography>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1 }}
-        >
-          <Typography variant="h5" sx={{ color: '#43a047', mb: 4 }}>
-            Discover natural, handmade soaps with beautiful effects and animations.
-          </Typography>
-        </motion.div>
-      </Box>
-      <Box sx={{ mt: 4 }}>
-        {page === 'admin' ? (
-          apiConfig === null ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
-          ) : (
-            <>
-              {isAdmin ? (
-                <Box>
-                  <AdminProducts apiBase={`http://localhost:${apiConfig.BACKEND_PORT || 4000}`} />
-                  <AdminLogs apiBase={`http://localhost:${apiConfig.BACKEND_PORT || 4000}`} />
-                  <AdminAnalytics apiBase={`http://localhost:${apiConfig.BACKEND_PORT || 4000}`} />
-                  <AdminOrders apiBase={`http://localhost:${apiConfig.BACKEND_PORT || 4000}`} />
-                </Box>
-              ) : (
-                <Box sx={{ p: 4 }}>
-                  <Typography variant="h6">Admin area — please sign in with an admin account.</Typography>
-                </Box>
-              )}
-            </>
-          )
-        ) : (
-          <ProductsPage apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />
-        )}
-      </Box>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} onSuccess={() => { setPage('admin'); refreshAuthFromStorage(); }} />
+      <Outlet />
+      <Footer />
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} onSuccess={() => { refreshAuthFromStorage(); }} />
     </Box>
   );
+}
+
+
+
+function AdminLayout({ apiConfig }: { apiConfig: any }) {
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
+  function decodeToken(token?: string | null): CustomJwtPayload | null {
+    if (!token) return null;
+    try {
+      // For frontend, we only decode the token. Verification should happen on the backend.
+      const payload = jwtDecode<CustomJwtPayload>(token);
+      return payload;
+    } catch (e) {
+      console.error("Error decoding token:", e);
+      return null;
+    }
+  }
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('hsw_token');
+    const payload = decodeToken(token);
+    setIsAdmin(!!(payload && payload.role === 'admin'));
+  }, []);
+
+  if (apiConfig === null) {
+    return <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
+  }
+
+  if (!isAdmin) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h6">Admin area — please sign in with an admin account.</Typography>
+      </Box>
+    );
+  }
+
+  return <Outlet />;
 }
 
 export default App;
