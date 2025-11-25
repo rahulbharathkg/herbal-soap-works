@@ -3,17 +3,17 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { AppDataSource } from '../data-source';
 dotenv.config();
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 
 const router = Router();
 const uploadDir = path.resolve(__dirname, '..', 'uploads');
 
 const storage = multer.diskStorage({
-  destination: function (_req, _file, cb) {
+  destination: function (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
     cb(null, uploadDir);
   },
-  filename: function (_req, file, cb) {
+  filename: function (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
     const safe = Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.\-]/g, '_');
     cb(null, safe);
   },
@@ -53,7 +53,7 @@ router.post('/', isAdmin, upload.single('file'), (req: Request, res: Response) =
       .save(
         adminLogRepo.create({ action: 'upload', userEmail: user?.email || 'unknown', details: JSON.stringify({ filename: req.file.filename, original: req.file.originalname }) })
       )
-      .catch(() => {});
+      .catch(() => { });
   } catch (e) {
     // ignore logging errors
   }
