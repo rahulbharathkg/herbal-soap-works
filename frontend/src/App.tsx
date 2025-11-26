@@ -38,9 +38,8 @@ const adminMenu = [
 ];
 
 function App() {
-  const apiBase = process.env.NODE_ENV === 'production'
-    ? 'https://herbal-soapwork.onrender.com'
-    : (process.env.REACT_APP_API_URL || 'http://localhost:4000');
+  // FORCE PRODUCTION API URL FOR TESTING
+  const apiBase = 'https://herbal-soapwork.onrender.com';
 
   return (
     <BrowserRouter>
@@ -100,7 +99,7 @@ function Layout({ apiBase }: { apiBase: string }) {
             <MenuIcon fontSize="large" />
           </IconButton>
           <Typography variant="h4" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: '#4a148c' }}>
-            Herbal Soap Works
+            Herbal Soap Works ✅
           </Typography>
           {userEmail ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
