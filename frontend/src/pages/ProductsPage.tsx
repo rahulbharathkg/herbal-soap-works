@@ -17,7 +17,55 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
           fetch(`${apiBase}/api/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'view', productId: prod.id }) }).catch(() => { });
         }
       } catch (e) { /* ignore */ }
-    }).catch(console.error);
+    }).catch((error) => {
+      console.error('API failed, using mock data:', error);
+      // Fallback to mock data
+      const mockProducts: Product[] = [
+        {
+          id: 1,
+          name: 'Goat Milk Soap',
+          description: 'Luxurious goat milk soap that deeply nourishes and moisturizes your skin. Rich in vitamins and minerals.',
+          price: 80,
+          imageUrl: '',
+        },
+        {
+          id: 2,
+          name: 'Tan Soap',
+          description: 'Natural tan removal soap with herbal extracts. Helps restore your skin\'s natural glow.',
+          price: 80,
+          imageUrl: '',
+        },
+        {
+          id: 3,
+          name: 'Red Wine Soap',
+          description: 'Anti-aging red wine soap packed with antioxidants. Rejuvenates and revitalizes your skin.',
+          price: 85,
+          imageUrl: '',
+        },
+        {
+          id: 4,
+          name: 'Charcoal Soap',
+          description: 'Activated charcoal soap for deep cleansing. Removes impurities and detoxifies skin.',
+          price: 80,
+          imageUrl: '',
+        },
+        {
+          id: 5,
+          name: 'Coffee Honey Soap',
+          description: 'Energizing coffee and honey blend. Exfoliates and brightens your complexion.',
+          price: 80,
+          imageUrl: '',
+        },
+        {
+          id: 6,
+          name: 'Sandalwood Soap',
+          description: 'Premium sandalwood soap with a calming fragrance. Naturally antiseptic and soothing.',
+          price: 85,
+          imageUrl: '',
+        },
+      ];
+      setProducts(mockProducts);
+    });
   }, [apiBase]);
 
   function onClickProduct(p: Product) {
