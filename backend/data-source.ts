@@ -1,33 +1,42 @@
+import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
 import path from 'path';
-// Load .env relative to the backend dist folder or source folder
-dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+import dotenv from 'dotenv';
+dotenv.config();
 
 const useSqlite = process.env.USE_SQLITE === 'true';
+
+// Support both DATABASE_URL (Render) and individual env vars (Supabase)
+const databaseUrl = process.env.DATABASE_URL;
 
 export const AppDataSource = new DataSource(
   useSqlite
     ? {
       type: 'sqlite',
-      database: process.env.SQLITE_DB || './dev.sqlite',
+      database: process.env.SQLITE_DB || path.resolve(__dirname, 'dev.sqlite'),
+      entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
       synchronize: true,
       logging: false,
-      entities: [__dirname + '/entities/*.{js,ts}'],
-      migrations: [__dirname + '/migrations/*.{js,ts}'],
-      subscribers: [],
     }
-    : {
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      synchronize: false,
-      logging: false,
-      entities: [__dirname + '/entities/*.{js,ts}'],
-      migrations: [__dirname + '/migrations/*.{js,ts}'],
-      subscribers: [],
-    }
+    : databaseUrl
+      ? {
+        type: 'postgres',
+        url: databaseUrl,
+        entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
+        synchronize: true, // WARNING: set to false in production after initial setup
+        logging: false,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      }
+      : {
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        username: process.env.DB_USERNAME || 'postgres',
+        password: process.env.DB_PASSWORD || 'postgres',
+        database: process.env.DB_DATABASE || 'postgres',
+        entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
+        synchronize: true,
+        logging: false,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      }
 );
