@@ -103,3 +103,4 @@ You can customize the workflow to add tests, linting or deployment steps.
 
 Enjoy your animated, modern Herbal Soap Works ecommerce site!
 # Deployment fix: API URL updated for production
+# Force redeploy Tue Nov 25 21:57:48 EST 2025
