@@ -38,7 +38,9 @@ const adminMenu = [
 ];
 
 function App() {
-  const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+  const apiBase = process.env.NODE_ENV === 'production'
+    ? 'https://herbal-soapwork.onrender.com'
+    : (process.env.REACT_APP_API_URL || 'http://localhost:4000');
 
   return (
     <BrowserRouter>
