@@ -51,6 +51,9 @@ app.use('/api/products', productRoutes);
 import uploadRoutes from './routes/upload';
 app.use('/api/upload', uploadRoutes);
 
+import seedRoutes from './routes/seed';
+app.use('/api', seedRoutes);
+
 import eventsRoutes from './routes/events';
 app.use('/api/events', eventsRoutes);
 
