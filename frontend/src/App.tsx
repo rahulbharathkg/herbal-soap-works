@@ -38,10 +38,12 @@ const adminMenu = [
 ];
 
 function App() {
-  const [apiConfig, setApiConfig] = React.useState<{ BACKEND_PORT?: number; USE_SQLITE?: boolean } | null>(null);
+  const [apiConfig, setApiConfig] = React.useState(null);
+  const [userEmail, setUserEmail] = React.useState<string>('');
 
   React.useEffect(() => {
-    fetch('http://localhost:4000/config').then((r) => r.json()).then((c) => setApiConfig(c)).catch(() => setApiConfig(null));
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+    fetch(`${apiUrl}/config`).then((r) => r.json()).then((c) => setApiConfig(c)).catch(() => setApiConfig(null));
   }, []);
 
   return (
