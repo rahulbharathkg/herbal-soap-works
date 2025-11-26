@@ -38,26 +38,20 @@ const adminMenu = [
 ];
 
 function App() {
-  const [apiConfig, setApiConfig] = React.useState(null);
-  const [userEmail, setUserEmail] = React.useState<string>('');
-
-  React.useEffect(() => {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-    fetch(`${apiUrl}/config`).then((r) => r.json()).then((c) => setApiConfig(c)).catch(() => setApiConfig(null));
-  }, []);
+  const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout apiConfig={apiConfig} />}>
+        <Route path="/" element={<Layout apiBase={apiBase} />}>
           <Route index element={<HomePage />} />
-          <Route path="products" element={<ProductsPage apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
-          <Route path="products/:id" element={<ProductDetailPage apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
-          <Route path="admin" element={<AdminLayout apiConfig={apiConfig} />}>
-            <Route path="products" element={<AdminProducts apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
-            <Route path="logs" element={<AdminLogs apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
-            <Route path="analytics" element={<AdminAnalytics apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
-            <Route path="orders" element={<AdminOrders apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} />} />
+          <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
+          <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
+          <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
+            <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
+            <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />
+            <Route path="analytics" element={<AdminAnalytics apiBase={apiBase} />} />
+            <Route path="orders" element={<AdminOrders apiBase={apiBase} />} />
           </Route>
         </Route>
       </Routes>
@@ -65,19 +59,19 @@ function App() {
   );
 }
 
-function Layout({ apiConfig }: { apiConfig: any }) {
+function Layout({ apiBase }: { apiBase: string }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
+
   function decodeToken(token?: string | null): CustomJwtPayload | null {
     if (!token) return null;
     try {
-      // For frontend, we only decode the token. Verification should happen on the backend.
       const payload = jwtDecode<CustomJwtPayload>(token);
       return payload;
     } catch (e) {
-      console.error("Error decoding token:", e);
+      console.error('Error decoding token:', e);
       return null;
     }
   }
@@ -94,7 +88,7 @@ function Layout({ apiConfig }: { apiConfig: any }) {
     const h = () => refreshAuthFromStorage();
     window.addEventListener('hsw_token_changed', h);
     return () => window.removeEventListener('hsw_token_changed', h);
-  }, [refreshAuthFromStorage]);
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1, minHeight: '100vh', background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' }}>
@@ -148,24 +142,23 @@ function Layout({ apiConfig }: { apiConfig: any }) {
       </Drawer>
       <Outlet />
       <Footer />
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} apiBase={`http://localhost:${apiConfig?.BACKEND_PORT || 4000}`} onSuccess={() => { refreshAuthFromStorage(); }} />
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} apiBase={apiBase} onSuccess={() => { refreshAuthFromStorage(); }} />
     </Box>
   );
 }
 
 
 
-function AdminLayout({ apiConfig }: { apiConfig: any }) {
+function AdminLayout({ apiBase }: { apiBase: string }) {
   const [isAdmin, setIsAdmin] = React.useState(false);
 
   function decodeToken(token?: string | null): CustomJwtPayload | null {
     if (!token) return null;
     try {
-      // For frontend, we only decode the token. Verification should happen on the backend.
       const payload = jwtDecode<CustomJwtPayload>(token);
       return payload;
     } catch (e) {
-      console.error("Error decoding token:", e);
+      console.error('Error decoding token:', e);
       return null;
     }
   }
@@ -175,10 +168,6 @@ function AdminLayout({ apiConfig }: { apiConfig: any }) {
     const payload = decodeToken(token);
     setIsAdmin(!!(payload && payload.role === 'admin'));
   }, []);
-
-  if (apiConfig === null) {
-    return <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
-  }
 
   if (!isAdmin) {
     return (

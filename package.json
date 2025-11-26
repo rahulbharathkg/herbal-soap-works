@@ -3,5 +3,14 @@
   "version": "1.0.0",
   "scripts": {
     "start": "bash start.sh"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.27"
   }
 }
