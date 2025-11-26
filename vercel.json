@@ -11,6 +11,10 @@
     ],
     "routes": [
         {
+            "src": "/products/(.*)",
+            "dest": "/products/$1"
+        },
+        {
             "src": "/static/(.*)",
             "dest": "/static/$1"
         },
