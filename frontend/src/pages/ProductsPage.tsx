@@ -19,6 +19,7 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
       } catch (e) { /* ignore */ }
     }).catch((error) => {
       console.error('API failed, using mock data:', error);
+      console.log('MOCK DATA LOADED - You should see products now!');
       // Fallback to mock data
       const mockProducts: Product[] = [
         {
