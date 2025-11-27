@@ -1,0 +1,47 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production (will be built by Vercel)
+build
+dist
+backend/dist
+
+# Misc
+.DS_Store
+*.log
+.env.local
+.env.development.local
+.env.test.local
+
+# Database
+*.sqlite
+*.db
+dev.sqlite
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.cursor
+
+# Git
+.git
+.gitignore
+
+# Scripts (not needed in deployment)
+scripts
+
+# Uploads (should be handled separately)
+backend/uploads
+
+# Config files
+.editorconfig
+.prettierrc
+tsconfig.json

@@ -92,13 +92,20 @@ app.get('/config', (_req, res) => {
   return res.json({ BACKEND_PORT: 4000, USE_SQLITE: true });
 });
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log('Data Source has been initialized!');
-    app.listen(4000, () => {
-      console.log('Server is running on port 4000');
+// Initialize database and start server (only in local development)
+if (require.main === module) {
+  AppDataSource.initialize()
+    .then(() => {
+      console.log('Data Source has been initialized!');
+      const PORT = process.env.BACKEND_PORT || 4000;
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Error during Data Source initialization', err);
     });
-  })
-  .catch((err) => {
-    console.error('Error during Data Source initialization', err);
-  });
+}
+
+// Export app for Vercel serverless
+export default app;

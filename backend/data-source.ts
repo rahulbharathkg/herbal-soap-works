@@ -1,42 +1,22 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import path from 'path';
-import dotenv from 'dotenv';
-dotenv.config();
+import { User } from './entities/User';
+import { Product } from './entities/Product';
+import { Order } from './entities/Order';
+import { AdminLog } from './entities/AdminLog';
+import { Event } from './entities/Event';
 
-const useSqlite = process.env.USE_SQLITE === 'true';
-
-// Support both DATABASE_URL (Render) and individual env vars (Supabase)
-const databaseUrl = process.env.DATABASE_URL;
-
-export const AppDataSource = new DataSource(
-  useSqlite
-    ? {
-      type: 'sqlite',
-      database: process.env.SQLITE_DB || path.resolve(__dirname, 'dev.sqlite'),
-      entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
-      synchronize: true,
-      logging: false,
-    }
-    : databaseUrl
-      ? {
-        type: 'postgres',
-        url: databaseUrl,
-        entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
-        synchronize: true, // WARNING: set to false in production after initial setup
-        logging: false,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      }
-      : {
-        type: 'postgres',
-        host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT || '5432'),
-        username: process.env.DB_USERNAME || 'postgres',
-        password: process.env.DB_PASSWORD || 'postgres',
-        database: process.env.DB_DATABASE || 'postgres',
-        entities: [path.join(__dirname, 'entities', '*.ts'), path.join(__dirname, 'entities', '*.js')],
-        synchronize: true,
-        logging: false,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      }
-);
+// Vercel Postgres configuration
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.POSTGRES_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  entities: [User, Product, Order, AdminLog, Event],
+  synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev only
+  logging: process.env.NODE_ENV !== 'production',
+  // Connection pooling for serverless
+  extra: {
+    max: 10, // Maximum connections
+    connectionTimeoutMillis: 10000,
+  },
+});
