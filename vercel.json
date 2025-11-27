@@ -32,20 +32,6 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.ts"
-    },
-    {
-      "src": "/uploads/(.*)",
-      "dest": "/backend/uploads/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
-  ],
   "env": {
     "REACT_APP_API_BASE_URL": "https://<YOUR_VERCEL_APP_NAME>.vercel.app/api",
     "DATABASE_URL": "postgresql://postgres:Rahulav@24@db.bnolrhtxisbvsaztjiuy.supabase.co:5432/postgres?sslmode=require",
