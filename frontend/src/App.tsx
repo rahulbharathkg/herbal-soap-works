@@ -39,7 +39,7 @@ const adminMenu = [
 
 function App() {
   // FORCE PRODUCTION API URL FOR TESTING
-  const apiBase = 'https://herbal-soapwork.onrender.com';
+  const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000';
 
   return (
     <BrowserRouter>
