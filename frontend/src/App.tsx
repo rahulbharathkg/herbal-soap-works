@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItemIcon, ListItemText, Box, Button, ListItemButton } from '@mui/material';
+import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,7 +13,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import HomePage from './pages/HomePage';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
-import { CircularProgress } from '@mui/material';
+
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
 
