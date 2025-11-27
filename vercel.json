@@ -10,10 +10,25 @@
         },
         {
             "src": "api/index.ts",
-            "use": "@vercel/node"
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": "api/seed.ts"
+            },
+            "env": {
+                "USE_SQLITE": "false",
+                "NODE_ENV": "production",
+                "DATABASE_URL": "postgresql://postgres:herbal-soapwork@db.bnolrhtxisbvsaztjiuy.supabase.co:5432/postgres",
+                "SEED_ADMIN_EMAIL": "admin@example.com",
+                "SEED_ADMIN_PASSWORD": "adminpassword",
+                "FRONTEND_URL": "https://herbalsw.vercel.app/"
+            }
         }
     ],
     "routes": [
+        {
+            "src": "/api/seed",
+            "dest": "/api/seed.ts"
+        },
         {
             "src": "/api/(.*)",
             "dest": "/api/index.ts"
@@ -28,11 +43,13 @@
         }
     ],
     "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "REACT_APP_API_BASE_URL": "https://herbalsw.vercel.app/api"
     },
     "build": {
         "env": {
-            "REACT_APP_API_URL": ""
-        }
+            "VERCEL_CLI_VERSION": "34.1.8"
+        },
+        "cmd": "npm install --prefix api && npm run seed --prefix api && npm run build --prefix api"
     }
 }

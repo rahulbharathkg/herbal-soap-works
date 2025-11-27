@@ -1,8 +1,7 @@
 import 'reflect-metadata';
-import path from 'path';
-import { AppDataSource } from './data-source';
-import { User } from './entities/User';
-import { Product } from './entities/Product';
+import { AppDataSource } from './_db'; // Changed from './data-source'
+import { User } from '../backend/entities/User';
+import { Product } from '../backend/entities/Product';
 import bcrypt from 'bcryptjs';
 
 async function seed() {

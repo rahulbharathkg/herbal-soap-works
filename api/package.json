@@ -2,6 +2,9 @@
   "name": "api",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "seed": "npx ts-node seed.ts"
+  },
   "dependencies": {
     "express": "^5.1.0",
     "typeorm": "^0.3.27",
