@@ -29,15 +29,6 @@
       "config": {
         "includeFiles": ["api/**"],
         "installCommand": "npm install --prefix api && npm run build --prefix api && npm run seed --prefix api"
-      },
-      "env": {
-        "DATABASE_URL": "@database_url",
-        "USE_SQLITE": "false",
-        "NODE_ENV": "production",
-        "SEED_ADMIN_EMAIL": "@seed_admin_email",
-        "SEED_ADMIN_PASSWORD": "@seed_admin_password",
-        "JWT_SECRET": "@jwt_secret",
-        "PORT": "4000"
       }
     }
   ],
@@ -56,6 +47,13 @@
     }
   ],
   "env": {
-    "REACT_APP_API_BASE_URL": "https://<YOUR_VERCEL_APP_NAME>.vercel.app/api"
+    "REACT_APP_API_BASE_URL": "https://<YOUR_VERCEL_APP_NAME>.vercel.app/api",
+    "DATABASE_URL": "postgresql://postgres:Rahulav@24@db.bnolrhtxisbvsaztjiuy.supabase.co:5432/postgres?sslmode=require",
+    "USE_SQLITE": "false",
+    "NODE_ENV": "production",
+    "SEED_ADMIN_EMAIL": "lavanya@herbal",
+    "SEED_ADMIN_PASSWORD": "adminpass",
+    "JWT_SECRET": "1234567890",
+    "PORT": "4000"
   }
 }
