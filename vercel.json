@@ -1,55 +1,61 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "build"
-            }
-        },
-        {
-            "src": "api/index.ts",
-            "use": "@vercel/node",
-            "config": {
-                "includeFiles": "api/seed.ts"
-            },
-            "env": {
-                "USE_SQLITE": "false",
-                "NODE_ENV": "production",
-                "DATABASE_URL": "postgresql://postgres:herbal-soapwork@db.bnolrhtxisbvsaztjiuy.supabase.co:5432/postgres",
-                "SEED_ADMIN_EMAIL": "admin@example.com",
-                "SEED_ADMIN_PASSWORD": "adminpassword",
-                "FRONTEND_URL": "https://herbalsw.vercel.app/"
-            }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/seed",
-            "dest": "/api/seed.ts"
-        },
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/index.ts"
-        },
-        {
-            "src": "/uploads/(.*)",
-            "dest": "/backend/uploads/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
-        }
-    ],
-    "env": {
-        "NODE_ENV": "production",
-        "REACT_APP_API_BASE_URL": "https://herbalsw.vercel.app/api"
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
     },
-    "build": {
-        "env": {
-            "VERCEL_CLI_VERSION": "34.1.8"
-        },
-        "cmd": "npm install --prefix api && npm run seed --prefix api && npm run build --prefix api"
+    {
+      "source": "/uploads/(.*)",
+      "destination": "/backend/uploads/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
     }
+  ],
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build",
+        "installCommand": "npm install --prefix frontend",
+        "buildCommand": "npm run build --prefix frontend"
+      }
+    },
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["api/**"],
+        "installCommand": "npm install --prefix api && npm run build --prefix api && npm run seed --prefix api"
+      },
+      "env": {
+        "DATABASE_URL": "@database_url",
+        "USE_SQLITE": "false",
+        "NODE_ENV": "production",
+        "SEED_ADMIN_EMAIL": "@seed_admin_email",
+        "SEED_ADMIN_PASSWORD": "@seed_admin_password",
+        "JWT_SECRET": "@jwt_secret",
+        "PORT": "4000"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.ts"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/backend/uploads/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_BASE_URL": "https://<YOUR_VERCEL_APP_NAME>.vercel.app/api"
+  }
 }
