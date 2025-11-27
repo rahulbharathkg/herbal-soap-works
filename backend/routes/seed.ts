@@ -25,6 +25,24 @@ router.post('/seed-database', async (req: Request, res: Response) => {
         // Add products
         const products = [
             {
+                name: 'Lavender Bliss Soap',
+                description: 'Soothing lavender soap with natural essential oils.',
+                price: 6.5,
+                imageUrl: '',
+            },
+            {
+                name: 'Rose Glow Soap',
+                description: 'Gentle rose-scented soap for radiant skin.',
+                price: 7.0,
+                imageUrl: '',
+            },
+            {
+                name: 'Mint Fresh Soap',
+                description: 'Cooling mint soap to refresh and revitalize.',
+                price: 5.75,
+                imageUrl: '',
+            },
+            {
                 name: 'Goat Milk Soap',
                 description: 'Luxurious goat milk soap that deeply nourishes and moisturizes your skin. Rich in vitamins and minerals.',
                 price: 80,

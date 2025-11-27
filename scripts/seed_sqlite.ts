@@ -56,6 +56,9 @@ async function seed() {
 
     // Products list (same as seed route)
     const products = [
+        { name: 'Lavender Bliss Soap', description: 'Soothing lavender soap with natural essential oils.', price: 6.5, imageUrl: '' },
+        { name: 'Rose Glow Soap', description: 'Gentle rose-scented soap for radiant skin.', price: 7.0, imageUrl: '' },
+        { name: 'Mint Fresh Soap', description: 'Cooling mint soap to refresh and revitalize.', price: 5.75, imageUrl: '' },
         { name: 'Goat Milk Soap', description: 'Luxurious goat milk soap that deeply nourishes and moisturizes your skin. Rich in vitamins and minerals.', price: 80, imageUrl: '' },
         { name: 'Tan Soap', description: "Natural tan removal soap with herbal extracts. Helps restore your skin's natural glow.", price: 80, imageUrl: '' },
         { name: 'Red Wine Soap', description: 'Anti-aging red wine soap packed with antioxidants. Rejuvenates and revitalizes your skin.', price: 85, imageUrl: '' },
