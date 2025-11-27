@@ -6,71 +6,30 @@ import ProductCard, { Product } from '../components/ProductCard';
 
 export default function ProductsPage({ apiBase }: { apiBase: string }) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // TEMPORARILY SHOW MOCK DATA IMMEDIATELY FOR TESTING
-    console.log('LOADING MOCK PRODUCTS - YOU SHOULD SEE THEM NOW!');
-    const mockProducts: Product[] = [
-      {
-        id: 1,
-        name: 'Goat Milk Soap',
-        description: 'Luxurious goat milk soap that deeply nourishes and moisturizes your skin. Rich in vitamins and minerals.',
-        price: 80,
-        imageUrl: '',
-      },
-      {
-        id: 2,
-        name: 'Tan Soap',
-        description: 'Natural tan removal soap with herbal extracts. Helps restore your skin\'s natural glow.',
-        price: 80,
-        imageUrl: '',
-      },
-      {
-        id: 3,
-        name: 'Red Wine Soap',
-        description: 'Anti-aging red wine soap packed with antioxidants. Rejuvenates and revitalizes your skin.',
-        price: 85,
-        imageUrl: '',
-      },
-      {
-        id: 4,
-        name: 'Charcoal Soap',
-        description: 'Activated charcoal soap for deep cleansing. Removes impurities and detoxifies skin.',
-        price: 80,
-        imageUrl: '',
-      },
-      {
-        id: 5,
-        name: 'Coffee Honey Soap',
-        description: 'Energizing coffee and honey blend. Exfoliates and brightens your complexion.',
-        price: 80,
-        imageUrl: '',
-      },
-      {
-        id: 6,
-        name: 'Sandalwood Soap',
-        description: 'Premium sandalwood soap with a calming fragrance. Naturally antiseptic and soothing.',
-        price: 85,
-        imageUrl: '',
-      },
-    ];
-    setProducts(mockProducts);
-
-    // Still try the API in the background for when it works
-    fetch(`${apiBase}/api/products`).then((r) => r.json()).then((p: Product[]) => {
-      if (p && p.length > 0) {
-        setProducts(p);
-        // send view events for each product loaded
-        try {
-          for (const prod of p || []) {
-            fetch(`${apiBase}/api/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'view', productId: prod.id }) }).catch(() => { });
-          }
-        } catch (e) { /* ignore */ }
-      }
-    }).catch((error) => {
-      console.error('API failed, keeping mock data:', error);
-    });
+    setLoading(true);
+    fetch(`${apiBase}/api/products`)
+      .then((r) => r.json())
+      .then((p: Product[]) => {
+        if (Array.isArray(p)) {
+          setProducts(p);
+          // send view events for each product loaded
+          try {
+            for (const prod of p) {
+              fetch(`${apiBase}/api/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'view', productId: prod.id }) }).catch(() => { });
+            }
+          } catch (e) { /* ignore */ }
+        }
+      })
+      .catch((error) => {
+        console.error('API failed:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [apiBase]);
 
   function onClickProduct(p: Product) {
@@ -126,28 +85,14 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
         </Container>
       </Box>
 
-      {/* SUCCESS INDICATOR */}
-      <Container maxWidth="lg" sx={{ mb: 4 }}>
-        <Box sx={{
-          background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-          border: '2px solid #4caf50',
-          borderRadius: 2,
-          p: 3,
-          textAlign: 'center',
-          mb: 4
-        }}>
-          <Typography variant="h4" sx={{ color: '#2e7d32', fontWeight: 'bold', mb: 1 }}>
-            🎉 PRODUCTS ARE LOADING! 🎉
-          </Typography>
-          <Typography variant="h6" sx={{ color: '#388e3c' }}>
-            ✅ Website Working | ✅ Products Visible | ✅ Deployment Success
-          </Typography>
-        </Box>
-      </Container>
 
-      {/* Product Grid */}
+
       <Container maxWidth="lg">
-        {filteredProducts.length === 0 ? (
+        {loading ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">Loading products...</Typography>
+          </Box>
+        ) : filteredProducts.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">No products found matching your search.</Typography>
           </Box>
