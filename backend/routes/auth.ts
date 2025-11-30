@@ -1,10 +1,10 @@
 import { Request, Response, Router } from 'express';
-import { AppDataSource } from '../data-source';
-import { User } from '../entities/User';
+import { AppDataSource } from '../data-source.js';
+import { User } from '../entities/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { sendVerificationEmail, sendPasswordResetEmail } from '../services/emailService';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../services/emailService.js';
 
 const router = Router();
 const userRepo = AppDataSource.getRepository(User);

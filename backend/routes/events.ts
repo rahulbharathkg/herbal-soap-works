@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { AppDataSource } from '../data-source';
-import { Event } from '../entities/Event';
+import { AppDataSource } from '../data-source.js';
+import { Event } from '../entities/Event.js';
 
 const router = Router();
 const repo = AppDataSource.getRepository(Event);

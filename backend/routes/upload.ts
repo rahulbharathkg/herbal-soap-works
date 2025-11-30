@@ -1,10 +1,16 @@
 import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { AppDataSource } from '../data-source';
+import { AppDataSource } from '../data-source.js';
 dotenv.config();
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
+
+import { fileURLToPath } from 'url';
+import { AdminLog } from '../entities/AdminLog.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = Router();
 const uploadDir = path.resolve(__dirname, '..', 'uploads');
@@ -47,7 +53,7 @@ router.post('/', isAdmin, upload.single('file'), (req: Request, res: Response) =
   const url = `/uploads/${req.file.filename}`;
   // log upload
   try {
-    const adminLogRepo = AppDataSource.getRepository(require('../entities/AdminLog').AdminLog);
+    const adminLogRepo = AppDataSource.getRepository(AdminLog);
     const user = (req as any).user;
     adminLogRepo
       .save(

@@ -23,6 +23,6 @@ export class User {
   @Column({ nullable: true })
   resetPasswordToken: string;
 
-  @Column({ nullable: true, type: 'timestamp' })
+  @Column({ nullable: true, type: 'datetime' })
   resetPasswordExpires: Date | null;
 }

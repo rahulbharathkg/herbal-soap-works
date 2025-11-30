@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { AppDataSource } from '../data-source';
-import { Product } from '../entities/Product';
-import { User } from '../entities/User';
+import { AppDataSource } from '../data-source.js';
+import { Product } from '../entities/Product.js';
+import { User } from '../entities/User.js';
 import bcrypt from 'bcryptjs';
 
 const router = Router();

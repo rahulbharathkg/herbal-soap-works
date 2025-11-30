@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { AppDataSource } from '../data-source';
-import { Event } from '../entities/Event';
-import { Order } from '../entities/Order';
-import { Product } from '../entities/Product';
+import { AppDataSource } from '../data-source.js';
+import { Event } from '../entities/Event.js';
+import { Order } from '../entities/Order.js';
+import { Product } from '../entities/Product.js';
 
 const router = Router();
 

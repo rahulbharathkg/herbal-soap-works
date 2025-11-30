@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { AppDataSource } from '../data-source';
-import { AdminLog } from '../entities/AdminLog';
+import { AppDataSource } from '../data-source.js';
+import { AdminLog } from '../entities/AdminLog.js';
 
 const router = Router();
 const repo = AppDataSource.getRepository(AdminLog);

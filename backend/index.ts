@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
-import { AppDataSource } from './data-source';
+import { AppDataSource } from './data-source.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';

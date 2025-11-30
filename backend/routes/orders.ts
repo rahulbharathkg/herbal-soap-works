@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { AppDataSource } from '../data-source';
-import { Order } from '../entities/Order';
-import { Event } from '../entities/Event';
+import { AppDataSource } from '../data-source.js';
+import { Order } from '../entities/Order.js';
+import { Event } from '../entities/Event.js';
 
 const router = Router();
 const orderRepo = AppDataSource.getRepository(Order);

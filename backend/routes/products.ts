@@ -1,13 +1,13 @@
 import { Request, Response, Router } from 'express';
-import { AppDataSource } from '../data-source';
-import { Product } from '../entities/Product';
+import { AppDataSource } from '../data-source.js';
+import { Product } from '../entities/Product.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const router = Router();
 const productRepo = AppDataSource.getRepository(Product);
-import { AdminLog } from '../entities/AdminLog';
+import { AdminLog } from '../entities/AdminLog.js';
 const adminLogRepo = AppDataSource.getRepository(AdminLog);
 
 async function logAction(action: string, userEmail: string | undefined, details: any) {
