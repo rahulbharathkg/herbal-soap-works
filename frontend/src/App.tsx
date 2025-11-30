@@ -32,13 +32,13 @@ const adminMenu = [
   { text: 'Dashboard', icon: <SpaIcon />, path: '/admin' },
   { text: 'Products', icon: <SpaIcon />, path: '/admin/products' },
   { text: 'Orders', icon: <SpaIcon />, path: '/admin/orders' },
-  { text: 'Analytics', icon: <SpaIcon />, path: 'admin/analytics' },
+  { text: 'Analytics', icon: <SpaIcon />, path: '/admin/analytics' },
   { text: 'Logs', icon: <SpaIcon />, path: '/admin/logs' },
 ];
 
 function App() {
-  // FORCE PRODUCTION API URL FOR TESTING
-  const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000';
+  // Use production API URL for deployed site, localhost for development
+  const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works.vercel.app/api' : 'http://localhost:4000');
 
   return (
     <BrowserRouter>

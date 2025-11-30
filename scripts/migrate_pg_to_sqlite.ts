@@ -1,21 +1,32 @@
+#!/usr/bin/env tsx
+
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { User } from '../backend/entities/User.js';
+import { Product } from '../backend/entities/Product.js';
+import { Order } from '../backend/entities/Order.js';
+import { AdminLog } from '../backend/entities/AdminLog.js';
+import { Event } from '../backend/entities/Event.js';
 
-dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '..', 'backend', '.env') });
 
 // PostgreSQL source (uses DATABASE_URL or individual vars)
 const pgDataSource = new DataSource({
     type: 'postgres',
-    url: process.env.DATABASE_URL,
+    url: process.env.POSTGRES_URL || process.env.DATABASE_URL,
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '5432'),
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     synchronize: false,
-    entities: [path.join(__dirname, '..', 'backend', 'entities', '*.{ts,js}')],
+    entities: [User, Product, Order, AdminLog, Event],
 });
 
 // SQLite target (uses same entities)
@@ -23,7 +34,7 @@ const sqliteDataSource = new DataSource({
     type: 'sqlite',
     database: process.env.SQLITE_DB || path.resolve(__dirname, '..', 'backend', 'dev.sqlite'),
     synchronize: true, // create tables if missing
-    entities: [path.join(__dirname, '..', 'backend', 'entities', '*.{ts,js}')],
+    entities: [User, Product, Order, AdminLog, Event],
 });
 
 async function migrate() {

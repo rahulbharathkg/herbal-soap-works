@@ -1,9 +1,14 @@
+#!/usr/bin/env tsx
+
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import path from 'path';
 import dotenv from 'dotenv';
-import { User } from '../backend/entities/User';
-import { Product } from '../backend/entities/Product';
+import { User } from '../backend/entities/User.js';
+import { Product } from '../backend/entities/Product.js';
+import { Order } from '../backend/entities/Order.js';
+import { AdminLog } from '../backend/entities/AdminLog.js';
+import { Event } from '../backend/entities/Event.js';
 import bcrypt from 'bcryptjs';
 
 // Use process.cwd() for script location (CommonJS compatible)
@@ -20,9 +25,7 @@ const AppDataSource = new DataSource(
         ? {
             type: 'sqlite',
             database: process.env.SQLITE_DB || path.resolve(__dirname, 'backend', 'dev.sqlite'),
-            entities: [
-                path.join(__dirname, '..', 'backend', 'entities', '*.{ts,js}'),
-            ],
+            entities: [User, Product, Order, AdminLog, Event],
             synchronize: true,
             logging: false,
         }
@@ -30,7 +33,7 @@ const AppDataSource = new DataSource(
             // fallback – not used in this script
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            entities: [path.join(__dirname, '..', 'backend', 'entities', '*.{ts,js}')],
+            entities: [User, Product, Order, AdminLog, Event],
             synchronize: true,
             logging: false,
         }

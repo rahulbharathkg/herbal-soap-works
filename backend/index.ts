@@ -5,6 +5,11 @@ import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Load .env relative to the backend dist folder or source folder
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
@@ -42,28 +47,28 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-import authRoutes from './routes/auth';
+import authRoutes from './routes/auth.js';
 app.use('/api/auth', authRoutes);
 
-import productRoutes from './routes/products';
+import productRoutes from './routes/products.js';
 app.use('/api/products', productRoutes);
 
-import uploadRoutes from './routes/upload';
+import uploadRoutes from './routes/upload.js';
 app.use('/api/upload', uploadRoutes);
 
-import seedRoutes from './routes/seed';
+import seedRoutes from './routes/seed.js';
 app.use('/api', seedRoutes);
 
-import eventsRoutes from './routes/events';
+import eventsRoutes from './routes/events.js';
 app.use('/api/events', eventsRoutes);
 
-import ordersRoutes from './routes/orders';
+import ordersRoutes from './routes/orders.js';
 app.use('/api/orders', ordersRoutes);
 
-import reportsRoutes from './routes/reports';
+import reportsRoutes from './routes/reports.js';
 app.use('/api/reports', reportsRoutes);
 
-import logsRoutes from './routes/logs';
+import logsRoutes from './routes/logs.js';
 app.use('/api/admin/logs', logsRoutes);
 
 // serve uploads folder
@@ -93,7 +98,7 @@ app.get('/config', (_req, res) => {
 });
 
 // Initialize database and start server (only in local development)
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   AppDataSource.initialize()
     .then(() => {
       console.log('Data Source has been initialized!');

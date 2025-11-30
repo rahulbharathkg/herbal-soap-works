@@ -27,13 +27,13 @@
       "src": "api/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["api/**"],
-        "installCommand": "npm install --prefix api && npm run build --prefix api && npm run seed --prefix api"
+        "includeFiles": ["backend/**", "api/**"],
+        "installCommand": "npm install --prefix backend && npm run build --prefix backend"
       }
     }
   ],
   "env": {
-    "REACT_APP_API_BASE_URL": "https://<YOUR_VERCEL_APP_NAME>.vercel.app/api",
+    "REACT_APP_API_BASE_URL": "https://herbal-soap-works.vercel.app/api",
     "DATABASE_URL": "postgresql://postgres:Rahulav@24@db.bnolrhtxisbvsaztjiuy.supabase.co:5432/postgres?sslmode=require",
     "USE_SQLITE": "false",
     "NODE_ENV": "production",
