@@ -3,10 +3,10 @@ import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typograp
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
 import { motion, AnimatePresence } from 'framer-motion';
-import AdminProducts from './pages/AdminProducts';
-import AdminLogs from './pages/AdminLogs';
-import AdminAnalytics from './pages/AdminAnalytics';
-import AdminOrders from './pages/AdminOrders';
+// import AdminProducts from './pages/AdminProducts';
+// import AdminLogs from './pages/AdminLogs';
+// import AdminAnalytics from './pages/AdminAnalytics';
+// import AdminOrders from './pages/AdminOrders';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 
@@ -47,12 +47,12 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
           <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
-          <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
+          {/* <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
             <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
             <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />
             <Route path="analytics" element={<AdminAnalytics apiBase={apiBase} />} />
             <Route path="orders" element={<AdminOrders apiBase={apiBase} />} />
-          </Route>
+          </Route> */}
         </Route>
       </Routes>
     </BrowserRouter>
@@ -149,35 +149,35 @@ function Layout({ apiBase }: { apiBase: string }) {
 
 
 
-function AdminLayout({ apiBase }: { apiBase: string }) {
-  const [isAdmin, setIsAdmin] = React.useState(false);
+// function AdminLayout({ apiBase }: { apiBase: string }) {
+//   const [isAdmin, setIsAdmin] = React.useState(false);
 
-  function decodeToken(token?: string | null): CustomJwtPayload | null {
-    if (!token) return null;
-    try {
-      const payload = jwtDecode<CustomJwtPayload>(token);
-      return payload;
-    } catch (e) {
-      console.error('Error decoding token:', e);
-      return null;
-    }
-  }
+//   function decodeToken(token?: string | null): CustomJwtPayload | null {
+//     if (!token) return null;
+//     try {
+//       const payload = jwtDecode<CustomJwtPayload>(token);
+//       return payload;
+//     } catch (e) {
+//       console.error('Error decoding token:', e);
+//       return null;
+//     }
+//   }
 
-  React.useEffect(() => {
-    const token = localStorage.getItem('hsw_token');
-    const payload = decodeToken(token);
-    setIsAdmin(!!(payload && payload.role === 'admin'));
-  }, []);
+//   React.useEffect(() => {
+//     const token = localStorage.getItem('hsw_token');
+//     const payload = decodeToken(token);
+//     setIsAdmin(!!(payload && payload.role === 'admin'));
+//   }, []);
 
-  if (!isAdmin) {
-    return (
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h6">Admin area — please sign in with an admin account.</Typography>
-      </Box>
-    );
-  }
+//   if (!isAdmin) {
+//     return (
+//       <Box sx={{ p: 4 }}>
+//         <Typography variant="h6">Admin area — please sign in with an admin account.</Typography>
+//       </Box>
+//     );
+//   }
 
-  return <Outlet />;
-}
+//   return <Outlet />;
+// }
 
 export default App;
