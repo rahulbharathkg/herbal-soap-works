@@ -8,7 +8,9 @@ import { Event } from './entities/Event.js';
 import path from 'path';
 
 // Check if we should use SQLite (from environment or EDIT.json)
-const useSqlite = process.env.USE_SQLITE === 'true';
+// In production (Fly.io), we use DATABASE_URL. Locally we use SQLite unless configured otherwise.
+const isProduction = process.env.NODE_ENV === 'production';
+const useSqlite = process.env.USE_SQLITE === 'true' || !isProduction;
 
 export const AppDataSource = new DataSource(
   useSqlite
@@ -16,19 +18,18 @@ export const AppDataSource = new DataSource(
       type: 'sqlite',
       database: process.env.SQLITE_DB || path.resolve('./backend/dev.sqlite'),
       entities: [User, Product, Order, AdminLog, Event],
-      synchronize: process.env.NODE_ENV !== 'production',
-      logging: process.env.NODE_ENV !== 'production',
+      synchronize: true, // Auto-create tables in dev
+      logging: true,
     }
     : {
       type: 'postgres',
-      url: process.env.POSTGRES_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      url: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // Required for many cloud providers
       entities: [User, Product, Order, AdminLog, Event],
-      synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev only
-      logging: process.env.NODE_ENV !== 'production',
-      // Connection pooling for serverless
+      synchronize: true, // Auto-sync schema in production for simplicity (use migrations for strict prod)
+      logging: false,
       extra: {
-        max: 10, // Maximum connections
+        max: 10,
         connectionTimeoutMillis: 10000,
       },
     }

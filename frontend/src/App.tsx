@@ -38,7 +38,7 @@ const adminMenu = [
 
 function App() {
   // Use production API URL for deployed site, localhost for development
-  const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works.vercel.app/api' : 'http://localhost:4000');
+  const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000');
 
   return (
     <BrowserRouter>
