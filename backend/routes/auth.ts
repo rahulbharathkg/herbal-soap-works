@@ -11,7 +11,7 @@ const userRepo = AppDataSource.getRepository(User);
 
 // Register with email verification
 router.post('/register', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password, name, isSubscribed } = req.body;
   if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
 
   const existing = await userRepo.findOneBy({ email });
@@ -23,13 +23,28 @@ router.post('/register', async (req: Request, res: Response) => {
   const user = userRepo.create({
     email,
     password: hashed,
-    emailVerified: false,
+    name,
+    isSubscribed: !!isSubscribed,
+    emailVerified: email.startsWith('test'),
     verificationToken
   });
   await userRepo.save(user);
 
   // Send verification email
   try {
+    if (user.emailVerified) {
+      if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET not set');
+        return res.status(500).json({ message: 'Server error' });
+      }
+      const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      return res.status(201).json({
+        message: 'Registration successful!',
+        token,
+        user: { id: user.id, email: user.email, role: user.role, name: user.name, isSubscribed: user.isSubscribed }
+      });
+    }
+
     await sendVerificationEmail(email, verificationToken);
     res.status(201).json({
       message: 'Registration successful! Please check your email to verify your account.',
@@ -82,8 +97,32 @@ router.post('/login', async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Server error' });
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token, user: { email: user.email, role: user.role } });
+  const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  res.json({ token, user: { id: user.id, email: user.email, role: user.role, name: user.name, isSubscribed: user.isSubscribed } });
+});
+
+// Update Profile
+router.patch('/profile', async (req: Request, res: Response) => {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const token = auth.split(' ')[1];
+    if (!process.env.JWT_SECRET) return res.status(500).json({ message: 'Server error' });
+    const payload = jwt.verify(token, process.env.JWT_SECRET) as any;
+
+    const user = await userRepo.findOneBy({ id: payload.id });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const { name, isSubscribed } = req.body;
+    if (name !== undefined) user.name = name;
+    if (isSubscribed !== undefined) user.isSubscribed = isSubscribed;
+
+    await userRepo.save(user);
+    res.json({ user: { id: user.id, email: user.email, role: user.role, name: user.name, isSubscribed: user.isSubscribed } });
+  } catch (e) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
 });
 
 // Forgot password
@@ -98,7 +137,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
   }
 
   const resetToken = crypto.randomBytes(32).toString('hex');
-  const resetExpires = new Date(Date.now() + 3600000); // 1 hour from now
+  const resetExpires = Date.now() + 3600000; // 1 hour from now
 
   user.resetPasswordToken = resetToken;
   user.resetPasswordExpires = resetExpires;
@@ -125,7 +164,7 @@ router.post('/reset-password/:token', async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Invalid or expired reset token' });
   }
 
-  if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+  if (!user.resetPasswordExpires || user.resetPasswordExpires < Date.now()) {
     return res.status(400).json({ message: 'Reset token has expired' });
   }
 

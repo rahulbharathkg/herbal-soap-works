@@ -50,8 +50,14 @@ app.use(express.json());
 import authRoutes from './routes/auth.js';
 app.use('/api/auth', authRoutes);
 
+import newsletterRoutes from './routes/newsletter.js';
+app.use('/api/newsletter', newsletterRoutes);
+
 import productRoutes from './routes/products.js';
 app.use('/api/products', productRoutes);
+
+import paymentsRoutes from './routes/payments.js';
+app.use('/api/payments', paymentsRoutes);
 
 import uploadRoutes from './routes/upload.js';
 app.use('/api/upload', uploadRoutes);

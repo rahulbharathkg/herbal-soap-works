@@ -3,6 +3,7 @@ import { Box, Card, CardContent, CardMedia, Typography, Button, Chip } from '@mu
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import ProductPlaceholder from './ProductPlaceholder';
+import { useCart } from '../context/CartContext';
 
 export type Product = {
     id: number;
@@ -18,6 +19,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onView }: ProductCardProps) {
+    const { addToCart } = useCart();
     return (
         <motion.div
             whileHover={{ y: -8 }}
@@ -68,14 +70,15 @@ export default function ProductCard({ product, onView }: ProductCardProps) {
                     >
                         <Button
                             variant="contained"
-                            color="secondary"
+                            color="primary"
                             size="small"
-                            component={Link}
-                            to={`/products/${product.id}`}
-                            onClick={() => onView?.(product)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                addToCart(product);
+                            }}
                             sx={{ borderRadius: 20, textTransform: 'none', fontWeight: 600 }}
                         >
-                            View Details
+                            Add to Cart
                         </Button>
                     </Box>
                 </Box>

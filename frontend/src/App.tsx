@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import PersonIcon from '@mui/icons-material/Person';
 import { motion, AnimatePresence } from 'framer-motion';
 // import AdminProducts from './pages/AdminProducts';
 // import AdminLogs from './pages/AdminLogs';
@@ -9,10 +11,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 // import AdminOrders from './pages/AdminOrders';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 import HomePage from './pages/HomePage';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
+import CartDrawer from './components/CartDrawer';
+import { CartProvider, useCart } from './context/CartContext';
+import UserDashboard from './pages/UserDashboard';
 
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
@@ -25,7 +31,7 @@ interface CustomJwtPayload extends JwtPayload {
 const baseMenu = [
   { text: 'Home', icon: <SpaIcon />, path: '/' },
   { text: 'Products', icon: <SpaIcon />, path: '/products' },
-  { text: 'Cart', icon: <SpaIcon />, path: '/cart' },
+  // Cart is handled by icon button now
 ];
 
 const adminMenu = [
@@ -41,21 +47,25 @@ function App() {
   const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000');
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout apiBase={apiBase} />}>
-          <Route index element={<HomePage />} />
-          <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
-          <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
-          {/* <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
-            <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
-            <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />
-            <Route path="analytics" element={<AdminAnalytics apiBase={apiBase} />} />
-            <Route path="orders" element={<AdminOrders apiBase={apiBase} />} />
-          </Route> */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout apiBase={apiBase} />}>
+            <Route index element={<HomePage />} />
+            <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
+            <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
+            <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
+            <Route path="profile" element={<UserDashboard apiBase={apiBase} />} />
+            {/* <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
+              <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
+              <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />
+              <Route path="analytics" element={<AdminAnalytics apiBase={apiBase} />} />
+              <Route path="orders" element={<AdminOrders apiBase={apiBase} />} />
+            </Route> */}
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
 
@@ -64,6 +74,7 @@ function Layout({ apiBase }: { apiBase: string }) {
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
+  const { setIsCartOpen, cartCount } = useCart();
 
   function decodeToken(token?: string | null): CustomJwtPayload | null {
     if (!token) return null;
@@ -97,19 +108,26 @@ function Layout({ apiBase }: { apiBase: string }) {
           <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setDrawerOpen(true)}>
             <MenuIcon fontSize="large" />
           </IconButton>
-          <Typography variant="h4" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: '#4a148c' }}>
-            Herbal Soap Works ✅
+          <Typography variant="h4" component={Link} to="/" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: '#4a148c', textDecoration: 'none' }}>
+            Herbal Soap Works 🌿
           </Typography>
           {userEmail ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="body2">{userEmail}</Typography>
-              <Button color="inherit" sx={{ fontWeight: 600 }} onClick={() => { localStorage.removeItem('hsw_token'); localStorage.removeItem('hsw_user'); window.dispatchEvent(new Event('hsw_token_changed')); }}>Logout</Button>
+              <Button color="inherit" startIcon={<PersonIcon />} component={Link} to="/profile" sx={{ fontWeight: 600 }}>
+                My Account
+              </Button>
             </Box>
           ) : (
             <Button color="inherit" sx={{ fontWeight: 600 }} onClick={() => setLoginOpen(true)}>Login</Button>
           )}
+          <IconButton color="inherit" onClick={() => setIsCartOpen(true)} sx={{ ml: 1 }}>
+            <Badge badgeContent={cartCount} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
         </Toolbar>
       </AppBar>
+      <CartDrawer />
       <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <Box sx={{ width: 250, p: 2 }} role="presentation" onClick={() => setDrawerOpen(false)}>
           <AnimatePresence>

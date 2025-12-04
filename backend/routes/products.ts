@@ -78,9 +78,27 @@ router.delete('/:id', isAdmin, async (req: Request, res: Response) => {
 });
 
 // Public: List products
-router.get('/', async (_req: Request, res: Response) => {
-  const products = await productRepo.find();
-  res.json(products);
+router.get('/', async (req: Request, res: Response) => {
+  // Query params: search, minPrice, maxPrice, page, limit
+  const search = (req.query.search as string) || '';
+  const minPrice = parseFloat(req.query.minPrice as string) || 0;
+  const maxPrice = parseFloat(req.query.maxPrice as string) || Number.MAX_VALUE;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+
+  const where: any = [];
+  if (search) {
+    where.push({ name: () => `name LIKE '%${search}%'` });
+    where.push({ description: () => `description LIKE '%${search}%'` });
+  }
+  where.push({ price: () => `price BETWEEN ${minPrice} AND ${maxPrice}` });
+
+  const [products, total] = await productRepo.findAndCount({
+    where: where.length ? where : undefined,
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+  res.json({ products, total, page, limit });
 });
 
 // Public: Get product detail
