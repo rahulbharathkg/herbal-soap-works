@@ -19,6 +19,7 @@ import LoginModal from './components/LoginModal';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider, useCart } from './context/CartContext';
 import UserDashboard from './pages/UserDashboard';
+import CustomSoapBuilder from './pages/CustomSoapBuilder';
 
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
@@ -55,7 +56,9 @@ function App() {
             <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
             <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
             <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
+            <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
             <Route path="profile" element={<UserDashboard apiBase={apiBase} />} />
+            <Route path="custom-soap" element={<CustomSoapBuilder apiBase={apiBase} />} />
             {/* <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
               <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
               <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />

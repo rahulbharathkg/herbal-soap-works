@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface CartItem {
-    productId: number;
+    productId: number | string;
     name: string;
     price: number;
     quantity: number;
     imageUrl?: string;
+    description?: string;
 }
 
 interface CartContextType {
     items: CartItem[];
     addToCart: (product: any) => void;
-    removeFromCart: (productId: number) => void;
-    updateQuantity: (productId: number, quantity: number) => void;
+    removeFromCart: (productId: number | string) => void;
+    updateQuantity: (productId: number | string, quantity: number) => void;
     clearCart: () => void;
     cartTotal: number;
     cartCount: number;
@@ -43,16 +44,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
             if (existing) {
                 return prev.map(i => i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i);
             }
-            return [...prev, { productId: product.id, name: product.name, price: product.price, quantity: 1, imageUrl: product.imageUrl }];
+            return [...prev, {
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                imageUrl: product.imageUrl,
+                description: product.description
+            }];
         });
         setIsCartOpen(true);
     }
 
-    function removeFromCart(productId: number) {
+    function removeFromCart(productId: number | string) {
         setItems(prev => prev.filter(i => i.productId !== productId));
     }
 
-    function updateQuantity(productId: number, quantity: number) {
+    function updateQuantity(productId: number | string, quantity: number) {
         if (quantity < 1) {
             removeFromCart(productId);
             return;
