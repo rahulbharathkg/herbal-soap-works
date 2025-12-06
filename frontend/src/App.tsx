@@ -47,7 +47,8 @@ const adminMenu = [
 
 function App() {
   // Use production API URL for deployed site, localhost for development
-  const rawApiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev' : 'http://localhost:4000');
+  // In Vercel, backend is on same domain at /api, so we use relative path if env var is not set
+  const rawApiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000');
   const apiBase = rawApiBase.endsWith('/api') ? rawApiBase : `${rawApiBase}/api`;
 
   const [theme, setTheme] = React.useState(createTheme({
