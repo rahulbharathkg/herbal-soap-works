@@ -1,0 +1,26 @@
+{
+    "name": "herbal-soap-works",
+    "version": "1.0.0",
+    "description": "Herbal Soap Works E-commerce",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "dotenv": "^17.2.3",
+        "jsonwebtoken": "^9.0.2",
+        "pg": "^8.16.3",
+        "reflect-metadata": "^0.2.2",
+        "typeorm": "^0.3.27"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.9.3"
+    }
+}
