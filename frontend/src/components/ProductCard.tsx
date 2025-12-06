@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Card, CardContent, CardMedia, Typography, Button, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+
 import ProductPlaceholder from './ProductPlaceholder';
 import { useCart } from '../context/CartContext';
 

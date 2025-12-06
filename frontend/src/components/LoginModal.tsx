@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, Link, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, FormControlLabel, Checkbox } from '@mui/material';
 
 export default function LoginModal({ open, onClose, apiBase, onSuccess }: { open: boolean; onClose: () => void; apiBase: string; onSuccess?: () => void }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -34,7 +34,7 @@ export default function LoginModal({ open, onClose, apiBase, onSuccess }: { open
       }
 
       const j = await res.json();
-      
+
       if (j.token) {
         localStorage.setItem('hsw_token', j.token);
         localStorage.setItem('hsw_user', email);
@@ -47,18 +47,18 @@ export default function LoginModal({ open, onClose, apiBase, onSuccess }: { open
         setError(j.message || 'Registration successful. Please check your email.');
         // Optionally switch to login mode if it was registration
         if (isRegister) {
-             // Keep them on the modal to see the message, or maybe clear fields?
-             // For now just showing the message in the error/status area is fine.
-             // But 'setError' shows it in red. Maybe we need a success message state?
-             // The current UI only has 'error' state for messages.
-             // Let's use setError for now as it's visible, but maybe prefix it?
-             // Actually, let's just use the error field but maybe we should have a success state.
-             // Given the constraints, I'll just use setError but it will look like an error.
-             // Better: add a successMsg state?
-             // The user didn't ask for a UI overhaul here, just "auto login".
-             // But for the "verification required" case, we don't want to auto-login.
-             // Let's just use setError for visibility for now, or maybe I can quickly add a success message state.
-             // Looking at the file, it's small. I can add `successMsg`.
+          // Keep them on the modal to see the message, or maybe clear fields?
+          // For now just showing the message in the error/status area is fine.
+          // But 'setError' shows it in red. Maybe we need a success message state?
+          // The current UI only has 'error' state for messages.
+          // Let's use setError for now as it's visible, but maybe prefix it?
+          // Actually, let's just use the error field but maybe we should have a success state.
+          // Given the constraints, I'll just use setError but it will look like an error.
+          // Better: add a successMsg state?
+          // The user didn't ask for a UI overhaul here, just "auto login".
+          // But for the "verification required" case, we don't want to auto-login.
+          // Let's just use setError for visibility for now, or maybe I can quickly add a success message state.
+          // Looking at the file, it's small. I can add `successMsg`.
         }
       }
       setLoading(false);

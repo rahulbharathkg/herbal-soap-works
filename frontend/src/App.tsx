@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
+import React, { useCallback } from 'react';
+import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -44,6 +44,17 @@ const adminMenu = [
   { text: 'Analytics', icon: <SpaIcon />, path: '/admin/analytics' },
   { text: 'Logs', icon: <SpaIcon />, path: '/admin/logs' },
 ];
+
+function decodeToken(token?: string | null): CustomJwtPayload | null {
+  if (!token) return null;
+  try {
+    const payload = jwtDecode<CustomJwtPayload>(token);
+    return payload;
+  } catch (e) {
+    console.error('Error decoding token:', e);
+    return null;
+  }
+}
 
 function App() {
   // Use production API URL for deployed site, localhost for development
@@ -118,30 +129,19 @@ function Layout({ apiBase }: { apiBase: string }) {
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const { setIsCartOpen, cartCount } = useCart();
 
-  function decodeToken(token?: string | null): CustomJwtPayload | null {
-    if (!token) return null;
-    try {
-      const payload = jwtDecode<CustomJwtPayload>(token);
-      return payload;
-    } catch (e) {
-      console.error('Error decoding token:', e);
-      return null;
-    }
-  }
-
-  function refreshAuthFromStorage() {
+  const refreshAuthFromStorage = useCallback(() => {
     const token = localStorage.getItem('hsw_token');
     const payload = decodeToken(token);
     setIsAdmin(!!(payload && payload.role === 'admin'));
     setUserEmail(payload?.email || null);
-  }
+  }, []);
 
   React.useEffect(() => {
     refreshAuthFromStorage();
     const h = () => refreshAuthFromStorage();
     window.addEventListener('hsw_token_changed', h);
     return () => window.removeEventListener('hsw_token_changed', h);
-  }, []);
+  }, [refreshAuthFromStorage]);
 
   return (
     <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
