@@ -52,9 +52,18 @@ function App() {
 
   const [theme, setTheme] = React.useState(createTheme({
     palette: {
-      primary: { main: '#4a148c' },
-      secondary: { main: '#7b1fa2' },
+      primary: { main: '#2E3B29' }, // Earthy Dark Green
+      secondary: { main: '#C4A484' }, // Light Brown/Beige
+      background: { default: '#ffffff' }
     },
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: { fontWeight: 700 },
+      h2: { fontWeight: 700 },
+      h3: { fontWeight: 600 },
+      button: { textTransform: 'none', fontWeight: 600 }
+    },
+    shape: { borderRadius: 0 } // sharper edges for modern look
   }));
 
   React.useEffect(() => {
@@ -64,9 +73,15 @@ function App() {
         if (data.theme_primary || data.theme_secondary) {
           setTheme(createTheme({
             palette: {
-              primary: { main: data.theme_primary || '#4a148c' },
-              secondary: { main: data.theme_secondary || '#7b1fa2' },
+              primary: { main: data.theme_primary || '#2E3B29' },
+              secondary: { main: data.theme_secondary || '#C4A484' },
+              background: { default: '#ffffff' }
             },
+            typography: {
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+              button: { textTransform: 'none' }
+            },
+            shape: { borderRadius: 0 }
           }));
         }
       })
@@ -128,7 +143,7 @@ function Layout({ apiBase }: { apiBase: string }) {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)` }}>
+    <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="static" color="transparent" elevation={0}>
         <Toolbar>
           <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setDrawerOpen(true)}>

@@ -12,7 +12,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useNavigate } from 'react-router-dom';
 
-import PageBuilder from '../components/PageBuilder';
+import VisualBuilderWrapper from '../components/VisualBuilderWrapper';
 
 interface AdminDashboardProps {
     apiBase?: string;
@@ -84,7 +84,7 @@ export default function AdminDashboard({ apiBase }: AdminDashboardProps) {
             </Paper>
 
             <Box sx={{ p: 2 }}>
-                {activeTab === 0 && <PageBuilder token={token} baseUrl={BASE_URL} showMessage={setMessage} />}
+                {activeTab === 0 && <VisualBuilderWrapper token={token} baseUrl={BASE_URL} showMessage={setMessage} />}
                 {activeTab === 1 && <ContentManager token={token} baseUrl={BASE_URL} showMessage={setMessage} />}
                 {activeTab === 2 && <ProductManager token={token} baseUrl={BASE_URL} showMessage={setMessage} />}
                 {activeTab === 3 && <MediaManager token={token} baseUrl={BASE_URL} showMessage={setMessage} />}

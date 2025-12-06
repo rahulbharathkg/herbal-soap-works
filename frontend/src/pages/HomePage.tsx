@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { HeroBlock, TextBlock, ProductGridBlock, ImageBlock } from '../components/PageBlocks';
+import PageBlocks from '../components/PageBlocks';
 
 interface HomePageProps {
     apiBase: string;
@@ -39,15 +39,7 @@ export default function HomePage({ apiBase }: HomePageProps) {
 
     return (
         <Box>
-            {layout.map((block) => {
-                switch (block.type) {
-                    case 'hero': return <HeroBlock key={block.id} content={block.content} />;
-                    case 'text': return <TextBlock key={block.id} content={block.content} />;
-                    case 'product-grid': return <ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />;
-                    case 'image': return <ImageBlock key={block.id} content={block.content} />;
-                    default: return null;
-                }
-            })}
+            <PageBlocks layout={layout} />
         </Box>
     );
 }

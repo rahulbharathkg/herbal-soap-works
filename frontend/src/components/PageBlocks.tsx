@@ -119,3 +119,26 @@ export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ c
         </Container>
     );
 };
+// --- Main PageBlocks Component ---
+export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
+    // Use production API URL or localhost
+    const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000/api');
+
+    if (!layout || !Array.isArray(layout)) return null;
+
+    return (
+        <Box>
+            {layout.map((block) => {
+                switch (block.type) {
+                    case 'hero': return <HeroBlock key={block.id} content={block.content} />;
+                    case 'text': return <TextBlock key={block.id} content={block.content} />;
+                    case 'image': return <ImageBlock key={block.id} content={block.content} />;
+                    case 'grid': return <ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />;
+                    default: return null;
+                }
+            })}
+        </Box>
+    );
+};
+
+export default PageBlocks;
