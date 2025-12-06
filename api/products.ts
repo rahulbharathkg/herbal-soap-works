@@ -1,39 +1,36 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDataSource } from './_lib/db';
-import { Product } from '../backend/entities/Product';
+// import { getDataSource } from './_lib/db';
+// import { Product } from '../backend/entities/Product';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    try {
-        const dataSource = await getDataSource();
-        const productRepo = dataSource.getRepository(Product);
-
-        // Query params: search, minPrice, maxPrice, page, limit
-        const search = (req.query.search as string) || '';
-        const minPrice = parseFloat(req.query.minPrice as string) || 0;
-        const maxPrice = parseFloat(req.query.maxPrice as string) || 1000000;
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 20;
-
-        const query = productRepo.createQueryBuilder('product');
-
-        if (search) {
-            query.where('(product.name ILIKE :search OR product.description ILIKE :search)', { search: `%${search}%` });
+    // Mock data for testing
+    const mockProducts = [
+        {
+            id: 1,
+            name: "Herbal Soap - Lavender",
+            description: "Relaxing lavender-scented herbal soap",
+            price: 12.99,
+            imageUrl: "/uploads/lavender-soap.jpg",
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 2,
+            name: "Herbal Soap - Mint",
+            description: "Refreshing mint herbal soap",
+            price: 11.99,
+            imageUrl: "/uploads/mint-soap.jpg",
+            createdAt: new Date().toISOString()
         }
+    ];
 
-        query.andWhere('product.price BETWEEN :minPrice AND :maxPrice', { minPrice, maxPrice });
-
-        const [products, total] = await query
-            .skip((page - 1) * limit)
-            .take(limit)
-            .getManyAndCount();
-
-        return res.status(200).json({ products, total, page, limit });
-    } catch (error: any) {
-        console.error('Products API error:', error);
-        return res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
+    return res.status(200).json({
+        products: mockProducts,
+        total: mockProducts.length,
+        page: 1,
+        limit: 20
+    });
 }
