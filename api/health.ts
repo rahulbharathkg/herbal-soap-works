@@ -1,12 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
     res.status(200).json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        env: process.env.NODE_ENV,
-        hasDbUrl: !!process.env.DATABASE_URL,
-        message: 'Health check without DB test'
+        message: 'Minimal health check'
     });
 }
 
