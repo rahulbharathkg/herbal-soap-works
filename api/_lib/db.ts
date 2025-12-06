@@ -19,14 +19,11 @@ export async function getDataSource(): Promise<DataSource> {
     dataSource = new DataSource({
         type: 'postgres',
         url: process.env.DATABASE_URL,
-        ssl: true,
+        ssl: { rejectUnauthorized: false },
         entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment, AdminContent],
-        synchronize: true, // Temporarily enabled to create schema in PROD
+        synchronize: true, // Temporarily enabled to create DB tables in PROD
         logging: false,
         extra: {
-            ssl: {
-                rejectUnauthorized: false
-            },
             max: 5, // Smaller pool for serverless
             connectionTimeoutMillis: 10000,
         },
