@@ -21,7 +21,7 @@ export async function getDataSource(): Promise<DataSource> {
         url: process.env.DATABASE_URL,
         ssl: true,
         entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment, AdminContent],
-        synchronize: process.env.NODE_ENV !== 'production', // Only in dev
+        synchronize: true, // Temporarily enabled to create schema in PROD
         logging: false,
         extra: {
             ssl: {
