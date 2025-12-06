@@ -1,6 +1,6 @@
 
-import { AppDataSource } from '../data-source.ts';
-import { AdminContent } from '../entities/AdminContent.ts';
+import { AppDataSource } from '../data-source.js';
+import { AdminContent } from '../entities/AdminContent.js';
 
 async function updateHomeLayout() {
     try {
