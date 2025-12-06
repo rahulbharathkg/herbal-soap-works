@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Container, TextField, InputAdornment, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { motion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ProductCard, { Product } from '../components/ProductCard';
 
 export default function ProductsPage({ apiBase }: { apiBase: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [minPrice, setMinPrice] = useState('');

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, Chip, Stepper, Step, StepLabel, IconButton, Divider, Paper, TextField } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, Chip, Stepper, Step, StepLabel, Divider, Paper, TextField } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';

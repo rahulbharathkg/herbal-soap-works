@@ -24,7 +24,7 @@ export default function AdminDashboard({ apiBase }: AdminDashboardProps) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const BASE_URL = apiBase || process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000/api';
     console.log('AdminDashboard API Base:', BASE_URL);
@@ -168,7 +168,10 @@ function ProductManager({ token, baseUrl, showMessage }: any) {
             .then(data => setProducts(data.products || []));
     };
 
-    useEffect(() => { fetchProducts(); }, []);
+    useEffect(() => {
+        fetchProducts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleSave = async () => {
         const method = currentProduct.id ? 'PUT' : 'POST';
@@ -249,7 +252,10 @@ function MediaManager({ token, baseUrl, showMessage }: any) {
             .then(data => setMedia(data));
     };
 
-    useEffect(() => { fetchMedia(); }, []);
+    useEffect(() => {
+        fetchMedia();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleUpload = async (e: any) => {
         const file = e.target.files[0];
