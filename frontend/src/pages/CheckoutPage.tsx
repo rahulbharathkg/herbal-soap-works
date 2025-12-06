@@ -1,20 +1,65 @@
-import React, { useState } from 'react';
-import { Box, Container, Typography, Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Button, Paper, Divider, Alert, CircularProgress } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, Typography, Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Divider, CircularProgress, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
-import { QRCodeCanvas } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
+import CountrySelector from '../components/CountrySelector';
+import UPIPayment from '../components/UPIPayment';
+import BankTransfer from '../components/BankTransfer';
+import { jwtDecode } from 'jwt-decode';
 
 export default function CheckoutPage({ apiBase }: { apiBase: string }) {
     const { items, cartTotal, clearCart } = useCart();
     const navigate = useNavigate();
 
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [country, setCountry] = useState('IN'); // Default to India
     const [address, setAddress] = useState('');
+
     const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'BankTransfer'>('UPI');
     const [loading, setLoading] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [orderId, setOrderId] = useState<number | null>(null);
     const [paymentReference, setPaymentReference] = useState('');
+
+    const [priceMultiplier, setPriceMultiplier] = useState(1);
+    const [detectedCountry, setDetectedCountry] = useState('');
+
+    // Check for logged-in user
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded: any = jwtDecode(token);
+                if (decoded.name) {
+                    const parts = decoded.name.split(' ');
+                    setFirstName(parts[0]);
+                    setLastName(parts.slice(1).join(' '));
+                }
+                if (decoded.email) setEmail(decoded.email);
+            } catch (e) {
+                console.error('Invalid token');
+            }
+        }
+    }, []);
+
+    // Detect Country from IP
+    useEffect(() => {
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                setDetectedCountry(data.country_code);
+                if (data.country_code !== 'IN') {
+                    setPriceMultiplier(1.6); // 60% increase
+                    setCountry(data.country_code);
+                }
+            })
+            .catch(err => console.error('Error fetching IP location', err));
+    }, []);
+
+    const finalTotal = cartTotal * priceMultiplier;
 
     if (items.length === 0 && !orderPlaced) {
         return (
@@ -26,21 +71,22 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
     }
 
     async function handlePlaceOrder() {
-        if (!email || !address) {
+        if (!firstName || !lastName || !email || !phone || !address) {
             alert('Please fill in all fields');
             return;
         }
         setLoading(true);
         try {
-            // 1. Create Order
             const orderRes = await fetch(`${apiBase}/api/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    items: items.map(i => ({ productId: i.productId, qty: i.quantity, price: i.price })),
-                    total: cartTotal,
-                    location: address,
-                    customerEmail: email
+                    items: items.map(i => ({ productId: i.productId, qty: i.quantity, price: i.price * priceMultiplier })),
+                    total: finalTotal,
+                    location: `${address}, ${country}`,
+                    customerEmail: email,
+                    customerName: `${firstName} ${lastName}`,
+                    customerPhone: phone
                 })
             });
             if (!orderRes.ok) throw new Error('Failed to create order');
@@ -60,14 +106,13 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
         if (!orderId) return;
         setLoading(true);
         try {
-            // 2. Create Payment Record
             const payRes = await fetch(`${apiBase}/api/payments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderId,
                     method: paymentMethod,
-                    amount: cartTotal,
+                    amount: finalTotal,
                     reference: paymentReference || 'N/A'
                 })
             });
@@ -93,28 +138,10 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
 
                     <Typography variant="h6" gutterBottom>Complete Payment</Typography>
                     <Typography variant="body2" color="text.secondary" paragraph>
-                        Please complete the payment of <strong>${cartTotal.toFixed(2)}</strong> using the method below.
+                        Please complete the payment of <strong>${finalTotal.toFixed(2)}</strong> using the method below.
                     </Typography>
 
-                    {paymentMethod === 'UPI' ? (
-                        <Box sx={{ textAlign: 'center', my: 4 }}>
-                            <Typography variant="subtitle1" gutterBottom>Scan QR to Pay</Typography>
-                            <Box sx={{ p: 2, bgcolor: 'white', display: 'inline-block', border: '1px solid #eee', borderRadius: 2 }}>
-                                <QRCodeCanvas value={`upi://pay?pa=rahul@upi&pn=HerbalSoapWorks&am=${cartTotal}&tr=${orderId}&tn=Order #${orderId}`} size={200} />
-                            </Box>
-                            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                                UPI ID: rahul@upi
-                            </Typography>
-                        </Box>
-                    ) : (
-                        <Box sx={{ my: 4, p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
-                            <Typography variant="subtitle2">Bank Transfer Details:</Typography>
-                            <Typography variant="body2">Bank: HDFC Bank</Typography>
-                            <Typography variant="body2">Account: 1234567890</Typography>
-                            <Typography variant="body2">IFSC: HDFC0001234</Typography>
-                            <Typography variant="body2">Name: Herbal Soap Works</Typography>
-                        </Box>
-                    )}
+                    {paymentMethod === 'UPI' ? <UPIPayment /> : <BankTransfer />}
 
                     <TextField
                         fullWidth
@@ -122,7 +149,7 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
                         value={paymentReference}
                         onChange={(e) => setPaymentReference(e.target.value)}
                         helperText="Enter the reference number from your payment app"
-                        sx={{ mb: 3 }}
+                        sx={{ mb: 3, mt: 3 }}
                     />
 
                     <Button
@@ -142,13 +169,39 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
     return (
         <Container maxWidth="md" sx={{ py: 6 }}>
             <Typography variant="h4" gutterBottom fontWeight={700}>Checkout</Typography>
+            {priceMultiplier > 1 && (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                    International pricing applied based on your location ({detectedCountry}).
+                </Alert>
+            )}
             <Grid container spacing={4}>
                 <Grid size={{ xs: 12, md: 7 }}>
                     <Paper sx={{ p: 3, mb: 3, borderRadius: 3 }}>
-                        <Typography variant="h6" gutterBottom>Shipping Details</Typography>
+                        <Typography variant="h6" gutterBottom>Contact & Shipping</Typography>
                         <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField fullWidth label="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField fullWidth label="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} />
+                            </Grid>
                             <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth label="Email Address" value={email} onChange={e => setEmail(e.target.value)} />
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
+                                <CountrySelector
+                                    value={phone}
+                                    onChange={setPhone}
+                                    onCountryChange={(c) => {
+                                        if (c && c !== 'IN') {
+                                            setPriceMultiplier(1.6);
+                                            setCountry(c);
+                                        } else {
+                                            setPriceMultiplier(1);
+                                            setCountry('IN');
+                                        }
+                                    }}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth label="Full Address" multiline rows={3} value={address} onChange={e => setAddress(e.target.value)} />
@@ -173,13 +226,13 @@ export default function CheckoutPage({ apiBase }: { apiBase: string }) {
                         {items.map(item => (
                             <Box key={item.productId} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                 <Typography variant="body2">{item.name} x {item.quantity}</Typography>
-                                <Typography variant="body2" fontWeight={600}>${(item.price * item.quantity).toFixed(2)}</Typography>
+                                <Typography variant="body2" fontWeight={600}>${(item.price * item.quantity * priceMultiplier).toFixed(2)}</Typography>
                             </Box>
                         ))}
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                             <Typography variant="h6">Total</Typography>
-                            <Typography variant="h6" color="primary.main">${cartTotal.toFixed(2)}</Typography>
+                            <Typography variant="h6" color="primary.main">${finalTotal.toFixed(2)}</Typography>
                         </Box>
                         <Button
                             variant="contained"

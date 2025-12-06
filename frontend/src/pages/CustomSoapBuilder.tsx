@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, Chip, Stepper, Step, StepLabel, IconButton, Divider, Paper } from '@mui/material';
+import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, Chip, Stepper, Step, StepLabel, IconButton, Divider, Paper, TextField } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -63,6 +63,7 @@ const BOOSTERS = [
 
 export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
     const [activeStep, setActiveStep] = useState(0);
+    const [customName, setCustomName] = useState('');
     const [selections, setSelections] = useState<{
         goals: string[];
         base: string | null;
@@ -119,7 +120,7 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
 
         addToCart({
             id: `custom-${Date.now()}`,
-            name: 'Custom Herbal Soap',
+            name: customName || 'Custom Herbal Soap',
             price: total,
             imageUrl: 'https://placehold.co/600x400/e0c3fc/4a148c?text=Custom+Soap',
             description: description,
@@ -221,6 +222,15 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
                     <Box>
                         <Typography variant="h5" gutterBottom>Your Custom Creation</Typography>
                         <Paper elevation={0} sx={{ p: 3, bgcolor: '#f3e5f5', borderRadius: 4 }}>
+                            <TextField
+                                fullWidth
+                                label="Name Your Soap"
+                                variant="outlined"
+                                value={customName}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomName(e.target.value)}
+                                sx={{ mb: 2, bgcolor: 'white' }}
+                                placeholder="e.g., Morning Zest"
+                            />
                             <Typography variant="subtitle1"><strong>Base:</strong> {BASES.find(b => b.id === selections.base)?.label || 'None'}</Typography>
                             <Typography variant="subtitle1"><strong>Ingredients:</strong> {selections.ingredients.map(id => INGREDIENTS.find(i => i.id === id)?.label).join(', ') || 'None'}</Typography>
                             <Typography variant="subtitle1"><strong>Oils:</strong> {selections.oils.map(id => OILS.find(i => i.id === id)?.label).join(', ') || 'None'}</Typography>
@@ -236,6 +246,21 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
         }
     };
 
+    const validateStep = (step: number) => {
+        switch (step) {
+            case 1: // Base
+                return !!selections.base;
+            case 2: // Ingredients
+                return selections.ingredients.length > 0;
+            case 3: // Oils
+                return selections.oils.length > 0;
+            default:
+                return true;
+        }
+    };
+
+    const canProceed = validateStep(activeStep);
+
     return (
         <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto', minHeight: '80vh' }}>
             <Typography variant="h3" align="center" sx={{ mb: 4, fontWeight: 700, color: '#4a148c' }}>
@@ -245,9 +270,9 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
             <Grid container spacing={4}>
                 <Grid size={{ xs: 12, md: 3 }}>
                     <Stepper activeStep={activeStep} orientation="vertical">
-                        {STEPS.map((label) => (
+                        {STEPS.map((label, index) => (
                             <Step key={label}>
-                                <StepLabel>{label}</StepLabel>
+                                <StepLabel error={activeStep > index && !validateStep(index)}>{label}</StepLabel>
                             </Step>
                         ))}
                     </Stepper>
@@ -283,6 +308,7 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
                                 size="large"
                                 onClick={handleAddToCart}
                                 startIcon={<AddCircleOutlineIcon />}
+                                disabled={!customName}
                             >
                                 Add to Cart - ₹{calculateTotal()}
                             </Button>
@@ -291,23 +317,37 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
                                 variant="contained"
                                 onClick={() => setActiveStep(prev => prev + 1)}
                                 endIcon={<ArrowForwardIcon />}
+                                disabled={!canProceed}
                             >
                                 Next
                             </Button>
                         )}
                     </Box>
+                    {!canProceed && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1, textAlign: 'right' }}>
+                            Please make a selection to proceed.
+                        </Typography>
+                    )}
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 3 }}>
-                    <Card sx={{ position: 'sticky', top: 20, borderRadius: 4, boxShadow: 3 }}>
-                        <CardMedia
-                            component="img"
-                            height="200"
-                            image="https://placehold.co/600x400/e0c3fc/4a148c?text=Your+Soap"
-                            alt="Custom Soap"
-                        />
+                    <Card sx={{ position: 'sticky', top: 20, borderRadius: 4, boxShadow: 3, overflow: 'visible' }}>
+                        <Box sx={{ position: 'relative', height: 200, bgcolor: '#f3e5f5', borderTopLeftRadius: 16, borderTopRightRadius: 16, overflow: 'hidden' }}>
+                            {/* Visual Representation of Mix */}
+                            <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', opacity: 0.8 }}>
+                                {selections.base && (
+                                    <motion.div initial={{ y: 100 }} animate={{ y: 0 }} style={{ position: 'absolute', bottom: 0, width: '100%', height: '80%', background: 'linear-gradient(to top, #fffdd0, transparent)', zIndex: 1 }} />
+                                )}
+                                {selections.ingredients.map((id, i) => (
+                                    <motion.div key={id} initial={{ scale: 0 }} animate={{ scale: 1 }} style={{ position: 'absolute', bottom: 20 + (i * 10), left: 20 + (i * 20), fontSize: '2rem', zIndex: 2 }}>
+                                        {INGREDIENTS.find(item => item.id === id)?.label.charAt(0)}
+                                    </motion.div>
+                                ))}
+                                <img src="https://placehold.co/600x400/e0c3fc/4a148c?text=Soap+Mix" alt="Soap Mix" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
+                            </Box>
+                        </Box>
                         <CardContent>
-                            <Typography variant="h6" gutterBottom>Live Summary</Typography>
+                            <Typography variant="h6" gutterBottom>Live Mix</Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                 {selections.base && <Chip label={BASES.find(b => b.id === selections.base)?.label} size="small" color="primary" />}
                                 {selections.ingredients.map(id => (

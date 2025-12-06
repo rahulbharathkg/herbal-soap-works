@@ -7,6 +7,7 @@ import { AdminLog } from './entities/AdminLog.js';
 import { Event } from './entities/Event.js';
 import { Subscriber } from './entities/Subscriber.js';
 import { Payment } from './entities/Payment.js';
+import { AdminContent } from './entities/AdminContent.js';
 import path from 'path';
 
 // Check if we should use SQLite (from environment or EDIT.json)
@@ -19,7 +20,7 @@ export const AppDataSource = new DataSource(
     ? {
       type: 'sqlite',
       database: process.env.SQLITE_DB || path.resolve('./backend/dev.sqlite'),
-      entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment],
+      entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment, AdminContent],
       synchronize: true, // Auto-create tables in dev
       logging: true,
     }
@@ -27,7 +28,7 @@ export const AppDataSource = new DataSource(
       type: 'postgres',
       url: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }, // Required for many cloud providers
-      entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment],
+      entities: [User, Product, Order, AdminLog, Event, Subscriber, Payment, AdminContent],
       synchronize: true, // Auto-sync schema in production for simplicity (use migrations for strict prod)
       logging: false,
       extra: {

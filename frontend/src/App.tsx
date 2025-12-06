@@ -20,6 +20,7 @@ import CartDrawer from './components/CartDrawer';
 import { CartProvider, useCart } from './context/CartContext';
 import UserDashboard from './pages/UserDashboard';
 import CustomSoapBuilder from './pages/CustomSoapBuilder';
+import AdminPanel from './pages/AdminPanel';
 
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
@@ -32,6 +33,7 @@ interface CustomJwtPayload extends JwtPayload {
 const baseMenu = [
   { text: 'Home', icon: <SpaIcon />, path: '/' },
   { text: 'Products', icon: <SpaIcon />, path: '/products' },
+  { text: 'Custom Soap', icon: <SpaIcon />, path: '/custom-soap' },
   // Cart is handled by icon button now
 ];
 
@@ -45,30 +47,51 @@ const adminMenu = [
 
 function App() {
   // Use production API URL for deployed site, localhost for development
-  const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000');
+  const rawApiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev' : 'http://localhost:4000');
+  const apiBase = rawApiBase.endsWith('/api') ? rawApiBase : `${rawApiBase}/api`;
+
+  const [theme, setTheme] = React.useState(createTheme({
+    palette: {
+      primary: { main: '#4a148c' },
+      secondary: { main: '#7b1fa2' },
+    },
+  }));
+
+  React.useEffect(() => {
+    fetch(`${apiBase}/admin/content`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.theme_primary || data.theme_secondary) {
+          setTheme(createTheme({
+            palette: {
+              primary: { main: data.theme_primary || '#4a148c' },
+              secondary: { main: data.theme_secondary || '#7b1fa2' },
+            },
+          }));
+        }
+      })
+      .catch(err => console.error('Failed to load theme', err));
+  }, [apiBase]);
 
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout apiBase={apiBase} />}>
-            <Route index element={<HomePage />} />
-            <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
-            <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
-            <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
-            <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
-            <Route path="profile" element={<UserDashboard apiBase={apiBase} />} />
-            <Route path="custom-soap" element={<CustomSoapBuilder apiBase={apiBase} />} />
-            {/* <Route path="admin" element={<AdminLayout apiBase={apiBase} />}>
-              <Route path="products" element={<AdminProducts apiBase={apiBase} />} />
-              <Route path="logs" element={<AdminLogs apiBase={apiBase} />} />
-              <Route path="analytics" element={<AdminAnalytics apiBase={apiBase} />} />
-              <Route path="orders" element={<AdminOrders apiBase={apiBase} />} />
-            </Route> */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </CartProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout apiBase={apiBase} />}>
+              <Route index element={<HomePage apiBase={apiBase} />} />
+              <Route path="products" element={<ProductsPage apiBase={apiBase} />} />
+              <Route path="products/:id" element={<ProductDetailPage apiBase={apiBase} />} />
+              <Route path="checkout" element={<CheckoutPage apiBase={apiBase} />} />
+              <Route path="profile" element={<UserDashboard apiBase={apiBase} />} />
+              <Route path="custom-soap" element={<CustomSoapBuilder apiBase={apiBase} />} />
+              <Route path="admin" element={<AdminPanel apiBase={apiBase} />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </ThemeProvider>
   );
 }
 
@@ -105,13 +128,13 @@ function Layout({ apiBase }: { apiBase: string }) {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' }}>
+    <Box sx={{ flexGrow: 1, minHeight: '100vh', background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)` }}>
       <AppBar position="static" color="transparent" elevation={0}>
         <Toolbar>
           <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setDrawerOpen(true)}>
             <MenuIcon fontSize="large" />
           </IconButton>
-          <Typography variant="h4" component={Link} to="/" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: '#4a148c', textDecoration: 'none' }}>
+          <Typography variant="h4" component={Link} to="/" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: 'primary.main', textDecoration: 'none' }}>
             Herbal Soap Works 🌿
           </Typography>
           {userEmail ? (
@@ -140,7 +163,7 @@ function Layout({ apiBase }: { apiBase: string }) {
               exit={{ x: -100, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-              <Typography variant="h5" sx={{ mb: 2, color: '#43a047', fontWeight: 700 }}>
+              <Typography variant="h5" sx={{ mb: 2, color: 'primary.main', fontWeight: 700 }}>
                 Menu
               </Typography>
               <List>

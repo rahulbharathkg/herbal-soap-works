@@ -13,6 +13,7 @@ interface Product {
   description: string;
   price: number;
   imageUrl?: string;
+  images?: string; // JSON string
 }
 
 export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
@@ -20,18 +21,32 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
-    fetch(`${apiBase}/api/products/${id}`)
+    fetch(`${apiBase}/products/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Product not found');
         return res.json();
       })
-      .then(data => setProduct(data))
+      .then(data => {
+        setProduct(data);
+        if (data.images) {
+          try {
+            const imgs = JSON.parse(data.images);
+            if (imgs.length > 0) setSelectedImage(imgs[0]);
+            else setSelectedImage(data.imageUrl);
+          } catch (e) {
+            setSelectedImage(data.imageUrl);
+          }
+        } else {
+          setSelectedImage(data.imageUrl);
+        }
+      })
       .catch(err => {
         console.error(err);
-        navigate('/products'); // Redirect if not found
+        navigate('/products');
       })
       .finally(() => setLoading(false));
   }, [apiBase, id, navigate]);
@@ -45,6 +60,11 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   }
 
   if (!product) return null;
+
+  const images = product.images ? JSON.parse(product.images) : [];
+  if (product.imageUrl && !images.includes(product.imageUrl)) {
+    images.unshift(product.imageUrl);
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -71,13 +91,14 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                 overflow: 'hidden',
                 bgcolor: '#f5f5f5',
                 position: 'relative',
-                paddingTop: '100%' // 1:1 Aspect Ratio
+                paddingTop: '100%', // 1:1 Aspect Ratio
+                mb: 2
               }}
             >
               <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                {product.imageUrl ? (
+                {selectedImage ? (
                   <img
-                    src={product.imageUrl}
+                    src={selectedImage}
                     alt={product.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
@@ -86,6 +107,31 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                 )}
               </Box>
             </Paper>
+
+            {/* Thumbnails */}
+            {images.length > 1 && (
+              <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
+                {images.map((img: string, idx: number) => (
+                  <Box
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      flexShrink: 0,
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      border: selectedImage === img ? '2px solid #4a148c' : '2px solid transparent',
+                      opacity: selectedImage === img ? 1 : 0.7,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <img src={img} alt={`View ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                ))}
+              </Box>
+            )}
           </motion.div>
         </Grid>
 

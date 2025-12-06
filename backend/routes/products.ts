@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { AppDataSource } from '../data-source.js';
 import { Product } from '../entities/Product.js';
+import { Like, Between } from 'typeorm';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -23,12 +24,9 @@ function isAdmin(req: Request, res: Response, next: Function) {
   const auth = req.headers.authorization;
   if (auth) {
     try {
-      if (!process.env.JWT_SECRET) {
-        console.error('JWT_SECRET not set');
-        return res.status(500).json({ message: 'Server error' });
-      }
+      const secret = process.env.JWT_SECRET || 'fallback_secret';
       const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, process.env.JWT_SECRET) as any;
+      const payload = jwt.verify(token, secret) as any;
       if (payload.role === 'admin') {
         (req as any).user = payload;
         return next();
@@ -82,22 +80,21 @@ router.get('/', async (req: Request, res: Response) => {
   // Query params: search, minPrice, maxPrice, page, limit
   const search = (req.query.search as string) || '';
   const minPrice = parseFloat(req.query.minPrice as string) || 0;
-  const maxPrice = parseFloat(req.query.maxPrice as string) || Number.MAX_VALUE;
+  const maxPrice = parseFloat(req.query.maxPrice as string) || 1000000;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
+  const query = productRepo.createQueryBuilder('product');
 
-  const where: any = [];
   if (search) {
-    where.push({ name: () => `name LIKE '%${search}%'` });
-    where.push({ description: () => `description LIKE '%${search}%'` });
+    query.where('(product.name LIKE :search OR product.description LIKE :search)', { search: `%${search}%` });
   }
-  where.push({ price: () => `price BETWEEN ${minPrice} AND ${maxPrice}` });
 
-  const [products, total] = await productRepo.findAndCount({
-    where: where.length ? where : undefined,
-    skip: (page - 1) * limit,
-    take: limit,
-  });
+  query.andWhere('product.price BETWEEN :minPrice AND :maxPrice', { minPrice, maxPrice });
+
+  const [products, total] = await query
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
   res.json({ products, total, page, limit });
 });
 

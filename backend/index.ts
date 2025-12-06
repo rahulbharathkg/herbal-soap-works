@@ -77,6 +77,9 @@ app.use('/api/reports', reportsRoutes);
 import logsRoutes from './routes/logs.js';
 app.use('/api/admin/logs', logsRoutes);
 
+import adminRoutes from './routes/admin.js';
+app.use('/api/admin', adminRoutes);
+
 // serve uploads folder
 const uploadsDir = path.resolve(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });

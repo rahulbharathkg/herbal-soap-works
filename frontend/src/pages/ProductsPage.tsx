@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Container, TextField, InputAdornment, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { motion } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ProductCard, { Product } from '../components/ProductCard';
 
 export default function ProductsPage({ apiBase }: { apiBase: string }) {
   const [products, setProducts] = useState<Product[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [minPrice, setMinPrice] = useState('');
@@ -18,13 +21,13 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
     setLoading(true);
     const query = new URLSearchParams({
       search: searchTerm,
-      minPrice: minPrice || '0',
-      maxPrice: maxPrice || '1000000',
+      minPrice: minPrice === '' ? '0' : minPrice,
+      maxPrice: maxPrice === '' ? '1000000' : maxPrice,
       page: page.toString(),
       limit: limit.toString()
     });
 
-    fetch(`${apiBase}/api/products?${query}`)
+    fetch(`${apiBase}/products?${query}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.products && Array.isArray(data.products)) {
@@ -34,7 +37,7 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
           // send view events for each product loaded
           try {
             for (const prod of data.products) {
-              fetch(`${apiBase}/api/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'view', productId: prod.id }) }).catch(() => { });
+              fetch(`${apiBase}/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'view', productId: prod.id }) }).catch(() => { });
             }
           } catch (e) { /* ignore */ }
         }
@@ -48,8 +51,9 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
   }, [apiBase, searchTerm, minPrice, maxPrice, page]);
 
   function onClickProduct(p: Product) {
-    // record click and open detail (for now just log)
-    fetch(`${apiBase}/api/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'click', productId: p.id }) }).catch(() => { });
+    // record click and open detail
+    fetch(`${apiBase}/events`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'click', productId: p.id }) }).catch(() => { });
+    navigate(`/products/${p.id}`);
   }
 
   // Client-side filtering removed in favor of server-side
