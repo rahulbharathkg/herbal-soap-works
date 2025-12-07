@@ -11,7 +11,36 @@ function handler(req: VercelRequest, res: VercelResponse) {
         home_hero_image: "/uploads/hero-image.jpg",
         home_hero_animation: "fade",
         theme_primary: "#2E3B29",
-        theme_secondary: "#C4A484"
+        theme_secondary: "#C4A484",
+        home_layout: JSON.stringify([
+            {
+                id: "hero-1",
+                type: "hero",
+                content: {
+                    title: "Welcome to Herbal Soap Works",
+                    subtitle: "Handcrafted with love, nature, and science. Discover our premium collection of natural herbal soaps.",
+                    imageUrl: "/uploads/hero-image.jpg",
+                    buttonText: "Shop Now",
+                    link: "/products"
+                }
+            },
+            {
+                id: "grid-1",
+                type: "text",
+                content: {
+                    text: "Explore our carefully crafted collection of natural herbal soaps, made with the finest ingredients from nature.",
+                    variant: "h5",
+                    align: "center"
+                }
+            },
+            {
+                id: "products-1",
+                type: "grid",
+                content: {
+                    limit: 4
+                }
+            }
+        ])
     };
 
     if (req.method === 'GET') {
