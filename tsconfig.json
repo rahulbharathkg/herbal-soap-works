@@ -13,11 +13,11 @@
         "noImplicitAny": false
     },
     "include": [
-        "api/**/*.ts",
-        "backend/**/*.ts"
+        "api/**/*.ts"
     ],
     "exclude": [
         "node_modules",
-        "frontend"
+        "frontend",
+        "backend"
     ]
 }
