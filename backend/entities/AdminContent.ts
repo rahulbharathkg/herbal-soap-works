@@ -5,13 +5,13 @@ export class AdminContent {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ unique: true })
+    @Column({ type: 'varchar', unique: true })
     key!: string; // e.g., "home_hero_title", "home_hero_image"
 
     @Column("text")
     value!: string; // The content itself
 
-    @Column()
+    @Column({ type: 'varchar' })
     type!: string; // "text", "image", "css"
 
     @UpdateDateColumn()

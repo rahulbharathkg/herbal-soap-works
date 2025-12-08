@@ -12,7 +12,7 @@ export class Product {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({ type: 'varchar' })
   name: string;
 
   @Column('text')
@@ -24,7 +24,7 @@ export class Product {
   @Column('decimal', { default: 0 })
   cost: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   imageUrl: string;
 
   @Column('text', { nullable: true })

@@ -5,10 +5,10 @@ export class AdminLog {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   action: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   userEmail: string;
 
   @Column('text', { nullable: true })

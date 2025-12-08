@@ -5,16 +5,16 @@ export class Event {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   type: string; // 'view' | 'click' | 'login' | 'order'
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   productId: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   userEmail: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   metadata: string; // JSON
 
   @CreateDateColumn()

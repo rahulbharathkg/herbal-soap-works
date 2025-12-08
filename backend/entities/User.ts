@@ -6,28 +6,28 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   name: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   password: string;
 
-  @Column({ default: 'user' })
+  @Column({ type: 'varchar', default: 'user' })
   role: string; // 'user' or 'admin'
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   emailVerified: boolean;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   isSubscribed: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   verificationToken: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   resetPasswordToken: string;
 
   @Column({ nullable: true, type: 'bigint' })

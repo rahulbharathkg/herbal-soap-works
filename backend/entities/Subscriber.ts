@@ -5,7 +5,7 @@ export class Subscriber {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
+    @Column({ type: 'varchar', unique: true })
     email: string;
 
     @CreateDateColumn()

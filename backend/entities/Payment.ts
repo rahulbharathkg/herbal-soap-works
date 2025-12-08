@@ -10,7 +10,7 @@ export class Payment {
     @JoinColumn({ name: 'orderId' })
     order: any;
 
-    @Column()
+    @Column({ type: 'int' })
     orderId: number;
 
     @Column({ type: 'varchar' })

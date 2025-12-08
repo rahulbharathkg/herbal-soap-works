@@ -13,17 +13,17 @@ export class Order {
   @Column('decimal')
   total: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   location: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   customerEmail: string;
 
   @ManyToOne(() => User, (user) => user.orders, { nullable: true })
   @JoinColumn({ name: 'userId' })
   user: any;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   userId: number;
 
   @CreateDateColumn()
