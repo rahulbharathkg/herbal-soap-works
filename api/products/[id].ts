@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDataSource } from '../_lib/db';
-import { Product } from '../../backend/entities/Product';
+import { getDataSource } from '../../backend/_lib/db.js';
+import { Product } from '../../backend/entities/Product.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'GET') {

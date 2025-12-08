@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDataSource } from '../_lib/db';
-import { User } from '../../backend/entities/User';
+import { getDataSource } from '../../backend/_lib/db.js';
+import { User } from '../../backend/entities/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
