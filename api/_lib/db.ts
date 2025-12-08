@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User } from '../../backend/entities/User.js';
-import { Product } from '../../backend/entities/Product.js';
-import { Order } from '../../backend/entities/Order.js';
-import { AdminLog } from '../../backend/entities/AdminLog.js';
-import { Event } from '../../backend/entities/Event.js';
-import { Subscriber } from '../../backend/entities/Subscriber.js';
-import { Payment } from '../../backend/entities/Payment.js';
-import { AdminContent } from '../../backend/entities/AdminContent.js';
+import { User } from '../entities/User.js';
+import { Product } from '../entities/Product.js';
+import { Order } from '../entities/Order.js';
+import { AdminLog } from '../entities/AdminLog.js';
+import { Event } from '../entities/Event.js';
+import { Subscriber } from '../entities/Subscriber.js';
+import { Payment } from '../entities/Payment.js';
+import { AdminContent } from '../entities/AdminContent.js';
 
 let dataSource: DataSource | null = null;
 
