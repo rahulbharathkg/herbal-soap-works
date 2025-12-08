@@ -1,10 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Order } from './Order.js';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ default: false })
+  isAdmin: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Column({ type: 'varchar', unique: true })
   email: string;
