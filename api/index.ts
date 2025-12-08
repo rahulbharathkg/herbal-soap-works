@@ -22,7 +22,8 @@ const allowCors = (fn: any) => async (req: VercelRequest, res: VercelResponse) =
 
 async function handler(req: VercelRequest, res: VercelResponse) {
     const { url = '', method } = req;
-    const path = url.split('?')[0].replace('/api/', ''); // Remove /api/ prefix
+    const path = url.split('?')[0].replace(/^\/?api\//, '').replace(/^\//, ''); // Robustly remove /api/ and leading slashes
+    console.log(`[API] ${method} ${url} -> ${path}`);
 
     console.log(`[API] ${method} ${path}`);
 
