@@ -13,11 +13,17 @@
         "noImplicitAny": false
     },
     "include": [
-        "api/**/*.ts"
+        "api/*.ts",
+        "api/admin/*.ts",
+        "api/products/*.ts"
     ],
     "exclude": [
         "node_modules",
         "frontend",
-        "backend"
+        "backend",
+        "api/_lib",
+        "api/entities",
+        "api/test-*.ts",
+        "api/db-test.ts"
     ]
 }
