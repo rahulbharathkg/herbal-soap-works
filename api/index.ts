@@ -31,7 +31,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         const dataSource = await getDataSource();
 
         // --- HEALTH CHECK ---
-        if (path === 'health') {
+        if (path === 'health' || path.endsWith('health')) {
             return res.status(200).json({
                 status: 'ok',
                 timestamp: new Date().toISOString(),
@@ -41,7 +41,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- PRODUCTS ---
-        if (path === 'products' && method === 'GET') {
+        if ((path === 'products' || path.endsWith('products')) && method === 'GET') {
             const productRepo = dataSource.getRepository(Product);
             const search = (req.query.search as string) || '';
             const minPrice = parseFloat(req.query.minPrice as string) || 0;
@@ -64,7 +64,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- CUSTOMER LOGIN ---
-        if (path === 'login' && method === 'POST') {
+        if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
@@ -84,7 +84,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- CUSTOMER REGISTER ---
-        if (path === 'register' && method === 'POST') {
+        if ((path === 'register' || path.endsWith('register')) && method === 'POST') {
             const { email, password, name, isSubscribed } = req.body;
             const userRepo = dataSource.getRepository(User);
 
@@ -122,7 +122,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- ADMIN LOGIN ---
-        if (path === 'admin/login' && method === 'POST') {
+        if ((path === 'admin/login' || path.endsWith('admin/login')) && method === 'POST') {
             const { email, password } = req.body;
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
@@ -146,7 +146,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- ADMIN CONTENT ---
-        if (path === 'admin/content') {
+        if (path === 'admin/content' || path.endsWith('admin/content')) {
             const contentRepo = dataSource.getRepository(AdminContent);
 
             if (method === 'GET') {
@@ -161,7 +161,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             }
         }
 
-        return res.status(404).json({ message: `Route ${path} not found` });
+        return res.status(404).json({ message: `Route not found`, receivedPath: path, originalUrl: url });
 
     } catch (error: any) {
         console.error('API Error:', error);
