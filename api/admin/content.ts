@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDataSource } from '../_lib/db';
-// import { requireAdmin, AuthRequest } from '../_lib/auth';
-import { AdminContent } from '../entities/AdminContent.js';
+import { getDataSource } from '../../backend/_lib/db.js';
+// import { requireAdmin, AuthRequest } from '../../backend/_lib/auth.js';
+import { AdminContent } from '../../backend/entities/AdminContent.js';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
     try {
