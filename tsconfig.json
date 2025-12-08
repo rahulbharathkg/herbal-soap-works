@@ -15,15 +15,12 @@
     "include": [
         "api/*.ts",
         "api/admin/*.ts",
-        "api/products/*.ts"
+        "api/products/*.ts",
+        "api/shared/*.ts"
     ],
     "exclude": [
         "node_modules",
         "frontend",
-        "backend",
-        "api/_lib",
-        "api/entities",
-        "api/test-*.ts",
-        "api/db-test.ts"
+        "backend"
     ]
 }
