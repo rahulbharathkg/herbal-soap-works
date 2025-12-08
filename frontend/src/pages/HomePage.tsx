@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import PageBlocks from '../components/PageBlocks';
 
 interface HomePageProps {
@@ -34,6 +34,7 @@ export default function HomePage({ apiBase }: HomePageProps) {
             <Box>
                 <PageBlocks layout={[
                     { type: 'hero', content: { title: 'Welcome to Herbal Soap Works', subtitle: 'Natural, Handcrafted Soaps for Radiant Skin', buttonText: 'Shop Now' } },
+                    { type: 'hero', content: { title: 'Create Your Own Soap', subtitle: 'Customize ingredients, scents, and colors just for you.', buttonText: 'Start Customizing', link: '/custom-soap', imageUrl: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' } },
                     { type: 'product-grid', content: { title: 'Our Products' } }
                 ]} />
             </Box>

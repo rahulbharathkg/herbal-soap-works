@@ -14,7 +14,7 @@ export default function LoginModal({ open, onClose, apiBase, onSuccess }: { open
   async function submit() {
     setError(null);
     setLoading(true);
-    const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
+    const endpoint = isRegister ? '/api/register' : '/api/login';
     const body = isRegister
       ? { email, password, name, isSubscribed }
       : { email, password };

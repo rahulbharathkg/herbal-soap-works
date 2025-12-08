@@ -62,6 +62,64 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ products, total, page, limit });
         }
 
+        // --- CUSTOMER LOGIN ---
+        if (path === 'login' && method === 'POST') {
+            const { email, password } = req.body;
+            const userRepo = dataSource.getRepository(User);
+            const user = await userRepo.findOne({ where: { email } });
+
+            if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+            const isValid = await compare(password, user.password);
+            if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
+
+            const token = sign(
+                { userId: user.id, email: user.email, isAdmin: user.isAdmin },
+                process.env.JWT_SECRET || 'default_secret',
+                { expiresIn: '24h' }
+            );
+
+            return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
+        }
+
+        // --- CUSTOMER REGISTER ---
+        if (path === 'register' && method === 'POST') {
+            const { email, password, name, isSubscribed } = req.body;
+            const userRepo = dataSource.getRepository(User);
+
+            const existing = await userRepo.findOne({ where: { email } });
+            if (existing) return res.status(400).json({ message: 'Email already exists' });
+
+            // Hash password (using bcryptjs directly here for simplicity in migration)
+            // Note: In a real app, use a helper. For now, assuming bcryptjs is available.
+            // We need to import hash from bcryptjs.
+            // Let's assume the User entity hooks handle hashing or we do it here.
+            // Checking User.ts... it doesn't seem to have BeforeInsert hooks shown.
+            // I'll add hashing here.
+            const { hash } = require('bcryptjs');
+            const hashedPassword = await hash(password, 10);
+
+            const newUser = userRepo.create({
+                email,
+                password: hashedPassword,
+                name,
+                isSubscribed: isSubscribed || false,
+                role: 'user',
+                isAdmin: false
+            });
+
+            await userRepo.save(newUser);
+
+            // Auto-login after register
+            const token = sign(
+                { userId: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
+                process.env.JWT_SECRET || 'default_secret',
+                { expiresIn: '24h' }
+            );
+
+            return res.status(201).json({ token, user: { id: newUser.id, email: newUser.email, name: newUser.name } });
+        }
+
         // --- ADMIN LOGIN ---
         if (path === 'admin/login' && method === 'POST') {
             const { email, password } = req.body;
