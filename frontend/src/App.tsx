@@ -129,7 +129,7 @@ function Layout({ apiBase }: { apiBase: string }) {
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const { setIsCartOpen, cartCount } = useCart();
-  const theme = React.useTheme();
+  const theme = useTheme();
   // Use media query to check for desktop/mobile
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
