@@ -33,8 +33,8 @@ export default function HomePage({ apiBase }: HomePageProps) {
         return (
             <Box>
                 <PageBlocks layout={[
-                    { type: 'hero', content: { title: 'Welcome to Herbal Soap Works', subtitle: 'Natural, Handcrafted Soaps for Radiant Skin', buttonText: 'Shop Now' } },
-                    { type: 'hero', content: { title: 'Create Your Own Soap', subtitle: 'Customize ingredients, scents, and colors just for you.', buttonText: 'Start Customizing', link: '/custom-soap', imageUrl: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' } },
+                    { type: 'hero', content: { title: 'Welcome to Herbal Soap Works', subtitle: 'Natural, Handcrafted Soaps for Radiant Skin', buttonText: 'Shop Now', videoUrl: '/images/home/animation1.mp4' } },
+                    { type: 'hero', content: { title: 'Create Your Own Soap', subtitle: 'Customize ingredients, scents, and colors just for you.', buttonText: 'Start Customizing', link: '/custom-soap', imageUrl: '/images/home/customised.jpg' } },
                     { type: 'product-grid', content: { title: 'Our Products' } }
                 ]} />
             </Box>

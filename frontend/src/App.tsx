@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
-import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Container, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Container, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PersonIcon from '@mui/icons-material/Person';
-import { motion, AnimatePresence } from 'framer-motion';
 // import AdminProducts from './pages/AdminProducts';
 // import AdminLogs from './pages/AdminLogs';
 // import AdminAnalytics from './pages/AdminAnalytics';
@@ -30,20 +29,10 @@ interface CustomJwtPayload extends JwtPayload {
   email?: string;
 }
 
-const baseMenu = [
-  { text: 'Home', icon: <SpaIcon />, path: '/' },
-  { text: 'Products', icon: <SpaIcon />, path: '/products' },
-  { text: 'Custom Soap', icon: <SpaIcon />, path: '/custom-soap' },
-  // Cart is handled by icon button now
-];
-
-const adminMenu = [
-  { text: 'Dashboard', icon: <SpaIcon />, path: '/admin' },
-  { text: 'Products', icon: <SpaIcon />, path: '/admin/products' },
-  { text: 'Orders', icon: <SpaIcon />, path: '/admin/orders' },
-  { text: 'Analytics', icon: <SpaIcon />, path: '/admin/analytics' },
-  { text: 'Logs', icon: <SpaIcon />, path: '/admin/logs' },
-];
+interface CustomJwtPayload extends JwtPayload {
+  role?: string;
+  email?: string;
+}
 
 function decodeToken(token?: string | null): CustomJwtPayload | null {
   if (!token) return null;
@@ -129,9 +118,6 @@ function Layout({ apiBase }: { apiBase: string }) {
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const { setIsCartOpen, cartCount } = useCart();
-  const theme = useTheme();
-  // Use media query to check for desktop/mobile
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const refreshAuthFromStorage = useCallback(() => {
     const token = localStorage.getItem('hsw_token');
@@ -199,19 +185,49 @@ function Layout({ apiBase }: { apiBase: string }) {
             </Box>
 
             {/* 4. User Actions (Right) */}
-            <Box sx={{ flexGrow: 0, display: 'flex', gap: 1 }}>
-              <IconButton color="inherit" onClick={() => setIsCartOpen(true)}>
-                <Badge badgeContent={cartCount} color="secondary">
-                  <ShoppingCartIcon />
-                </Badge>
-              </IconButton>
+            <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
+              {/* Cart with distinct label/icon */}
+              <Button
+                color="inherit"
+                onClick={() => setIsCartOpen(true)}
+                startIcon={<Badge badgeContent={cartCount} color="error"><ShoppingCartIcon /></Badge>}
+                sx={{ fontWeight: 'bold' }}
+              >
+                Cart
+              </Button>
 
               {userEmail ? (
-                <IconButton component={Link} to="/profile" color="primary">
-                  <PersonIcon />
-                </IconButton>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {/* User Name & Sign Out */}
+                  <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+                    <Typography variant="caption" display="block" sx={{ lineHeight: 1 }}>Hello,</Typography>
+                    <Typography variant="body2" fontWeight="bold">{userEmail.split('@')[0]}</Typography>
+                  </Box>
+                  <IconButton component={Link} to="/profile" color="primary" title="My Profile">
+                    <PersonIcon />
+                  </IconButton>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      localStorage.removeItem('hsw_token');
+                      localStorage.removeItem('hsw_user');
+                      window.dispatchEvent(new Event('hsw_token_changed'));
+                    }}
+                    sx={{ borderRadius: 20, ml: 1 }}
+                  >
+                    Sign Out
+                  </Button>
+                </Box>
               ) : (
-                <Button variant="outlined" size="small" onClick={() => setLoginOpen(true)} sx={{ ml: 1, borderRadius: 20 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  onClick={() => setLoginOpen(true)}
+                  sx={{ ml: 1, borderRadius: 20, px: 3 }}
+                >
                   Login
                 </Button>
               )}
@@ -219,6 +235,8 @@ function Layout({ apiBase }: { apiBase: string }) {
           </Toolbar>
         </Container>
       </AppBar>
+
+      <CartDrawer />
 
       {/* --- Mobile Drawer --- */}
       <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>

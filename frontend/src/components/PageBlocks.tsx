@@ -20,15 +20,47 @@ export const HeroBlock: React.FC<BlockProps> = ({ content, onEdit }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundImage: `url(${content.imageUrl})`,
+      < Box
+        onClick={onEdit}
+            sx={{
+                height: '600px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                textAlign: 'center',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
+                backgroundImage: !content.videoUrl ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${content.imageUrl || 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?ixlib=rb-4.0.3'})` : 'none',
+                position: 'relative',
+                overflow: 'hidden',
                 cursor: onEdit ? 'pointer' : 'default',
                 '&:hover': onEdit ? { outline: '2px solid blue' } : {}
             }}
         >
-            <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.4)' }} />
-            <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white' }}>
+            {content.videoUrl && (
+                <video
+                    src={content.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: -1
+                    }}
+                />
+            )}
+            {/* Overlay for readability if needed */}
+            {content.videoUrl && <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, bgcolor: 'rgba(0,0,0,0.3)' }} />}
+
+            <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                     <Typography variant="h2" fontWeight="bold" gutterBottom>{content.title}</Typography>
                     <Typography variant="h5" mb={4}>{content.subtitle}</Typography>
