@@ -29,10 +29,13 @@ export default function HomePage({ apiBase }: HomePageProps) {
     if (loading) return <Box display="flex" justifyContent="center" mt={10}><CircularProgress /></Box>;
 
     if (layout.length === 0) {
+        // Default layout if nothing is configured
         return (
-            <Box textAlign="center" mt={10}>
-                <Typography variant="h5">Welcome to Herbal Soap Works</Typography>
-                <Typography color="textSecondary">No content configured. Go to Admin Panel to build your page.</Typography>
+            <Box>
+                <PageBlocks layout={[
+                    { type: 'hero', content: { title: 'Welcome to Herbal Soap Works', subtitle: 'Natural, Handcrafted Soaps for Radiant Skin', buttonText: 'Shop Now' } },
+                    { type: 'product-grid', content: { title: 'Our Products' } }
+                ]} />
             </Box>
         );
     }
