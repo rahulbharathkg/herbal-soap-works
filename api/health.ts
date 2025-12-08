@@ -1,13 +1,23 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getDataSource } from './shared/db';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-    res.status(200).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        env: process.env.NODE_ENV,
-        hasDbUrl: !!process.env.DATABASE_URL,
-        dbUrlLength: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
-        dbUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + '...' : 'none'
-    });
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+    try {
+        await getDataSource();
+        res.status(200).json({
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            env: process.env.NODE_ENV,
+            hasDbUrl: !!process.env.DATABASE_URL,
+            db: 'connected'
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message || String(error),
+            env: process.env.NODE_ENV,
+            hasDbUrl: !!process.env.DATABASE_URL
+        });
+    }
 }
 
