@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Button, IconButton, Badge, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Container, Divider, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaIcon from '@mui/icons-material/Spa';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -122,12 +122,16 @@ function App() {
   );
 }
 
+// --- Modern Layout with Top Navigation ---
 function Layout({ apiBase }: { apiBase: string }) {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const { setIsCartOpen, cartCount } = useCart();
+  const theme = React.useTheme();
+  // Use media query to check for desktop/mobile
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const refreshAuthFromStorage = useCallback(() => {
     const token = localStorage.getItem('hsw_token');
@@ -143,63 +147,104 @@ function Layout({ apiBase }: { apiBase: string }) {
     return () => window.removeEventListener('hsw_token_changed', h);
   }, [refreshAuthFromStorage]);
 
+  const navLinks = [
+    { text: 'Home', path: '/' },
+    { text: 'Products', path: '/products' },
+    { text: 'Custom Soap', path: '/custom-soap' },
+    { text: 'About', path: '/#about' }, // Placeholder for now
+  ];
+
   return (
     <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setDrawerOpen(true)}>
-            <MenuIcon fontSize="large" />
-          </IconButton>
-          <Typography variant="h4" component={Link} to="/" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 2, color: 'primary.main', textDecoration: 'none' }}>
-            Herbal Soap Works 🌿
-          </Typography>
-          {userEmail ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button color="inherit" startIcon={<PersonIcon />} component={Link} to="/profile" sx={{ fontWeight: 600 }}>
-                My Account
-              </Button>
+      {/* --- Top App Bar --- */}
+      <AppBar position="sticky" color="default" elevation={1} sx={{ bgcolor: 'white' }}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+
+            {/* 1. Mobile Menu Button (Left) */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+              <IconButton size="large" onClick={() => setMobileOpen(true)} color="inherit">
+                <MenuIcon />
+              </IconButton>
             </Box>
-          ) : (
-            <Button color="inherit" sx={{ fontWeight: 600 }} onClick={() => setLoginOpen(true)}>Login</Button>
-          )}
-          <IconButton color="inherit" onClick={() => setIsCartOpen(true)} sx={{ ml: 1 }}>
-            <Badge badgeContent={cartCount} color="secondary">
-              <ShoppingCartIcon />
-            </Badge>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <CartDrawer />
-      <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box sx={{ width: 250, p: 2 }} role="presentation" onClick={() => setDrawerOpen(false)}>
-          <AnimatePresence>
-            <motion.div
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -100, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              <Typography variant="h5" sx={{ mb: 2, color: 'primary.main', fontWeight: 700 }}>
-                Menu
+
+            {/* 2. Brand Logo (Center on Mobile, Left on Desktop) */}
+            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: { xs: 1, md: 0 } }}>
+              <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 10, borderRadius: '50%' }} />
+              <Typography variant="h6" noWrap component={Link} to="/" sx={{
+                mr: 2,
+                display: { xs: 'flex', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.1rem',
+                color: 'primary.main',
+                textDecoration: 'none',
+              }}>
+                HERBAL SOAP
               </Typography>
-              <List>
-                {(isAdmin ? adminMenu : baseMenu).map((item) => (
-                  <motion.div
-                    key={item.text}
-                    whileHover={{ scale: 1.08, x: 10 }}
-                    transition={{ type: 'spring', stiffness: 400 }}
-                  >
-                    <ListItemButton component={Link} to={item.path} onClick={() => setDrawerOpen(false)}>
-                      <ListItemIcon>{item.icon}</ListItemIcon>
-                      <ListItemText primary={item.text} />
-                    </ListItemButton>
-                  </motion.div>
-                ))}
-              </List>
-            </motion.div>
-          </AnimatePresence>
+            </Box>
+
+            {/* 3. Desktop Navigation (Center) */}
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', gap: 4 }}>
+              {navLinks.map((page) => (
+                <Button key={page.text} component={Link} to={page.path} sx={{ my: 2, color: 'text.primary', display: 'block', fontWeight: 500 }}>
+                  {page.text}
+                </Button>
+              ))}
+              {isAdmin && (
+                <Button component={Link} to="/admin" sx={{ my: 2, color: 'secondary.main', display: 'block', fontWeight: 600 }}>
+                  Admin Panel
+                </Button>
+              )}
+            </Box>
+
+            {/* 4. User Actions (Right) */}
+            <Box sx={{ flexGrow: 0, display: 'flex', gap: 1 }}>
+              <IconButton color="inherit" onClick={() => setIsCartOpen(true)}>
+                <Badge badgeContent={cartCount} color="secondary">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+
+              {userEmail ? (
+                <IconButton component={Link} to="/profile" color="primary">
+                  <PersonIcon />
+                </IconButton>
+              ) : (
+                <Button variant="outlined" size="small" onClick={() => setLoginOpen(true)} sx={{ ml: 1, borderRadius: 20 }}>
+                  Login
+                </Button>
+              )}
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      {/* --- Mobile Drawer --- */}
+      <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
+          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
+            <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 10, borderRadius: '50%' }} />
+            <Typography variant="h6" fontWeight="bold">Herbal Soap</Typography>
+          </Box>
+          <List>
+            {navLinks.map((item) => (
+              <ListItemButton key={item.text} component={Link} to={item.path}>
+                <ListItemIcon><SpaIcon color="secondary" /></ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            ))}
+            <Divider sx={{ my: 1 }} />
+            {isAdmin && (
+              <ListItemButton component={Link} to="/admin">
+                <ListItemIcon><SpaIcon color="error" /></ListItemIcon>
+                <ListItemText primary="Admin Dashboard" />
+              </ListItemButton>
+            )}
+          </List>
         </Box>
       </Drawer>
+
       <Outlet />
       <Footer />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} apiBase={apiBase} onSuccess={() => { refreshAuthFromStorage(); }} />

@@ -77,21 +77,24 @@ export default function LoginModal({ open, onClose, apiBase, onSuccess }: { open
         </Button>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          {isRegister && (
-            <TextField label="Full Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
-          )}
-          <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
-          <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth />
+        <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {isRegister && (
+              <TextField label="Full Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
+            )}
+            <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
+            <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth />
 
-          {isRegister ? (
-            <FormControlLabel control={<Checkbox checked={isSubscribed} onChange={(e) => setIsSubscribed(e.target.checked)} />} label="Subscribe to Newsletter" />
-          ) : (
-            <FormControlLabel control={<Checkbox checked={remember} onChange={(e) => setRemember(e.target.checked)} />} label="Remember me" />
-          )}
+            {isRegister ? (
+              <FormControlLabel control={<Checkbox checked={isSubscribed} onChange={(e) => setIsSubscribed(e.target.checked)} />} label="Subscribe to Newsletter" />
+            ) : (
+              <FormControlLabel control={<Checkbox checked={remember} onChange={(e) => setRemember(e.target.checked)} />} label="Remember me" />
+            )}
 
-          {error && <Typography color="error">{error}</Typography>}
-        </Box>
+            <button type="submit" style={{ display: 'none' }}></button>
+            {error && <Typography color="error">{error}</Typography>}
+          </Box>
+        </form>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={loading}>Cancel</Button>
