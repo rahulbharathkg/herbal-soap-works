@@ -15,14 +15,6 @@ export const HeroBlock: React.FC<BlockProps> = ({ content, onEdit }) => {
         <Box
             onClick={onEdit}
             sx={{
-                position: 'relative',
-                height: '80vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-      < Box
-        onClick={onEdit}
-            sx={{
                 height: '600px',
                 display: 'flex',
                 alignItems: 'center',
