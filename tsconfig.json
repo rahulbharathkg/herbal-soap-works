@@ -13,9 +13,7 @@
         "noImplicitAny": false
     },
     "include": [
-        "api/*.ts",
-        "api/admin/*.ts",
-        "api/products/*.ts",
+        "api/index.ts",
         "api/shared/*.ts"
     ],
     "exclude": [
