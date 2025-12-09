@@ -112,7 +112,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
 
       <Grid container spacing={8}>
         {/* Product Images */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
             <Paper elevation={0} sx={{ overflow: 'hidden', borderRadius: 4, mb: 2, bgcolor: '#f9f9f9', position: 'relative', paddingTop: '100%' }}>
               <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
@@ -144,7 +144,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
         </Grid>
 
         {/* Product Info */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
             <Typography variant="h3" fontWeight={800} gutterBottom color="primary.main">{product.name}</Typography>
             <Chip label="In Stock" color="success" size="small" variant="filled" sx={{ mb: 3, borderRadius: 1 }} />
