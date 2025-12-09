@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { Payment } from './Payment.js';
-import { User } from './User.js';
+import { Payment } from './Payment';
+import { User } from './User';
 
 @Entity()
 export class Order {

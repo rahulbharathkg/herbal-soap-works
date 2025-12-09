@@ -170,7 +170,7 @@ export const HeroCarousel: React.FC<{ items: any[], onEdit?: () => void }> = ({ 
             <motion.div
                 animate={{ x: `-${current * 100}%` }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                style={{ display: 'flex', width: `${items.length * 100}%` }}
+                style={{ display: 'flex', width: '100%' }} // Keep container width 100%, animate x by percentage
             >
                 {items.map((item, idx) => (
                     <Box key={idx} sx={{ width: '100%', flexShrink: 0 }}>
@@ -200,29 +200,79 @@ export const HeroCarousel: React.FC<{ items: any[], onEdit?: () => void }> = ({ 
     );
 };
 
-// --- Testimonials Block ---
+// --- Testimonials Block (Carousel) ---
 export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
+    const defaultReviews = [
+        { text: "This soap changed my skincare routine completely. I love the natural ingredients!", author: "Sarah J.", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80" },
+        { text: "The scents are amazing and not overpowering. Will definitely buy again.", author: "Mike T.", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e" },
+        { text: "Best gift for my family. The packaging is eco-friendly and beautiful.", author: "Emily R.", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330" },
+    ];
+
+    const reviews = content.reviews || defaultReviews;
+    const [current, setCurrent] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrent(c => (c + 1) % reviews.length), 6000);
+        return () => clearInterval(timer);
+    }, [reviews.length]);
+
     return (
-        <Box sx={{ py: 8, bgcolor: '#fafafa' }}>
-            <Container maxWidth="lg">
-                <Typography variant="h4" textAlign="center" fontWeight="bold" gutterBottom mb={6}>
-                    {content.title || "What Our Customers Say"}
+        <Box sx={{ py: 10, bgcolor: '#fafafa', textAlign: 'center' }}>
+            <Container maxWidth="md">
+                <Typography variant="overline" color="primary" fontWeight="bold" letterSpacing={2} gutterBottom>
+                    TESTIMONIALS
                 </Typography>
-                <Grid container spacing={4}>
-                    {[1, 2, 3].map((i) => (
-                        <Grid size={{ xs: 12, md: 4 }} key={i}>
-                            <Paper elevation={0} sx={{ p: 4, height: '100%', borderRadius: 4, bgcolor: 'white', border: '1px solid #eee' }}>
-                                <Typography variant="h6" color="primary" gutterBottom>★★★★★</Typography>
-                                <Typography variant="body1" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
-                                    "{content.reviews?.[i - 1]?.text || "This soap changed my skincare routine completely. I love the natural ingredients!"}"
-                                </Typography>
-                                <Typography variant="subtitle2" fontWeight="bold">
-                                    — {content.reviews?.[i - 1]?.author || "Happy Customer"}
-                                </Typography>
-                            </Paper>
-                        </Grid>
-                    ))}
-                </Grid>
+                <Typography variant="h3" fontWeight="bold" mb={6}>
+                    {content.title || "Customer Love"}
+                </Typography>
+
+                <Box sx={{ position: 'relative', overflow: 'hidden', minHeight: 300 }}>
+                    <motion.div
+                        key={current}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <Box
+                            component="img"
+                            src={reviews[current].image}
+                            alt={reviews[current].author}
+                            sx={{
+                                width: 80,
+                                height: 80,
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                mb: 3,
+                                border: '4px solid white',
+                                boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)'
+                            }}
+                        />
+                        <Typography variant="h5" color="text.secondary" paragraph sx={{ fontStyle: 'italic', mb: 3 }}>
+                            "{reviews[current].text}"
+                        </Typography>
+                        <Typography variant="h6" fontWeight="bold" color="primary">
+                            — {reviews[current].author}
+                        </Typography>
+                    </motion.div>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 4 }}>
+                        {reviews.map((_: any, idx: number) => (
+                            <Box
+                                key={idx}
+                                onClick={() => setCurrent(idx)}
+                                sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: '50%',
+                                    bgcolor: current === idx ? 'primary.main' : 'rgba(0,0,0,0.1)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            />
+                        ))}
+                    </Box>
+                </Box>
             </Container>
         </Box>
     );

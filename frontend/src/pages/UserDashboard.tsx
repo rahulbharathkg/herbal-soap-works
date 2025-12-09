@@ -25,6 +25,12 @@ interface Order {
 
 export default function UserDashboard({ apiBase }: { apiBase: string }) {
     const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'addresses' | 'settings'>('overview');
+    const [user, setUser] = useState<User | null>(null);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [name, setName] = useState('');
+    const [isSubscribed, setIsSubscribed] = useState(false);
     const [addresses, setAddresses] = useState<any[]>([]);
     const [newAddress, setNewAddress] = useState({ label: '', street: '', city: '', zip: '' });
     const [showAddressForm, setShowAddressForm] = useState(false);
