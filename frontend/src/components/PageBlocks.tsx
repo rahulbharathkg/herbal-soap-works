@@ -161,7 +161,7 @@ export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
                 </Typography>
                 <Grid container spacing={4}>
                     {[1, 2, 3].map((i) => (
-                        <Grid item xs={12} md={4} key={i}>
+                        <Grid size={{ xs: 12, md: 4 }} key={i}>
                             <Paper elevation={0} sx={{ p: 4, height: '100%', borderRadius: 4, bgcolor: 'white', border: '1px solid #eee' }}>
                                 <Typography variant="h6" color="primary" gutterBottom>★★★★★</Typography>
                                 <Typography variant="body1" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
