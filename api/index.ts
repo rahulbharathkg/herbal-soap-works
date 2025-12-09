@@ -139,6 +139,33 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ message: `Updated images for ${products.length} products` });
         }
 
+        // --- AUDIT DB (TEMPORARY) ---
+        if (path === 'admin/audit-db') {
+            const queryRunner = dataSource.createQueryRunner();
+            const tables = await queryRunner.query(`
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                ORDER BY table_name;
+            `);
+            await queryRunner.release();
+
+            const userRepo = dataSource.getRepository(User);
+            const users = await userRepo.find();
+            const safeUsers = users.map(u => ({
+                id: u.id,
+                email: u.email,
+                role: u.role,
+                isAdmin: u.isAdmin,
+                name: u.name
+            }));
+
+            return res.status(200).json({
+                tables: tables.map((t: any) => t.table_name),
+                users: safeUsers
+            });
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
