@@ -38,6 +38,9 @@ export const HeroBlock: React.FC<BlockProps> = ({ content, onEdit }) => {
                     loop
                     muted
                     playsInline
+                    onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                    }}
                     style={{
                         position: 'absolute',
                         top: '50%',

@@ -294,8 +294,9 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                                             label="Subscribe to Newsletter (Deals, New Products)"
                                         />
                                     </Grid>
-                                    <Grid size={{ xs: 12 }}>
+                                    <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2 }}>
                                         <Button variant="contained" size="large" onClick={handleUpdateProfile}>Save Changes</Button>
+                                        <Button variant="outlined" size="large" onClick={() => window.location.reload()}>Refresh Account Status</Button>
                                     </Grid>
                                 </Grid>
                             </Paper>
