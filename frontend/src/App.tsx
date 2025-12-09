@@ -173,7 +173,7 @@ function Layout({ apiBase }: { apiBase: string }) {
                 color: 'primary.main',
                 textDecoration: 'none',
               }}>
-                HERBAL SOAP WORKS
+                HERBAL SOAP WORK
               </Typography>
             </Box>
 
@@ -260,7 +260,7 @@ function Layout({ apiBase }: { apiBase: string }) {
         <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
           <Box sx={{ p: 3, display: 'flex', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
             <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 15, borderRadius: '50%' }} />
-            <Typography variant="h6" fontWeight="bold">Herbal Soap Works</Typography>
+            <Typography variant="h6" fontWeight="bold">Herbal Soap Work</Typography>
           </Box>
           <List sx={{ pt: 2 }}>
             {navLinks.map((item) => (
