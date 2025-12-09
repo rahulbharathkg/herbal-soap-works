@@ -1,4 +1,4 @@
-import { getDataSource } from './shared/db';
+import { getDataSource } from '../api/shared/db';
 import { Product } from './shared/Product';
 
 const productsData = [

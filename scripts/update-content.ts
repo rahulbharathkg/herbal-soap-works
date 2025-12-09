@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { getDataSource } from './shared/db';
-import { AdminContent } from './shared/AdminContent';
+import { getDataSource } from '../api/shared/db';
+import { AdminContent } from '../api/shared/AdminContent';
 
 const homeLayout = [
     {

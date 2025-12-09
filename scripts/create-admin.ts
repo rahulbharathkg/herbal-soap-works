@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { getDataSource } from './shared/db';
-import { User } from './shared/User';
+import { getDataSource } from '../api/shared/db';
+import { User } from '../api/shared/User';
 import { hash } from 'bcryptjs';
 
 async function createAdmin() {
