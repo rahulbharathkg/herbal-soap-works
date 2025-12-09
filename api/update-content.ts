@@ -36,13 +36,18 @@ async function update() {
     const repo = ds.getRepository(AdminContent);
 
     console.log('Updating Home Page Layout...');
-    let content = await repo.findOne({ where: { id: 1 } });
+
+    // Check if 'home_layout' key exists
+    let content = await repo.findOne({ where: { key: 'home_layout' } });
 
     if (!content) {
-        content = repo.create({ id: 1 });
+        console.log('Creating new home_layout key...');
+        content = repo.create({ key: 'home_layout', type: 'json' });
+    } else {
+        console.log('Updating existing home_layout key...');
     }
 
-    content.home_layout = JSON.stringify(homeLayout);
+    content.value = JSON.stringify(homeLayout);
     await repo.save(content);
 
     console.log('Home Page Layout Updated!');

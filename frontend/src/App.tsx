@@ -137,32 +137,39 @@ function Layout({ apiBase }: { apiBase: string }) {
     { text: 'Home', path: '/' },
     { text: 'Products', path: '/products' },
     { text: 'Custom Soap', path: '/custom-soap' },
-    { text: 'About', path: '/#about' }, // Placeholder for now
   ];
 
   return (
     <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* --- Top App Bar --- */}
-      <AppBar position="sticky" color="default" elevation={1} sx={{ bgcolor: 'white' }}>
+      {/* --- Top App Bar (Glassmorphism) --- */}
+      <AppBar
+        position="sticky"
+        sx={{
+          bgcolor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0,0,0,0.05)',
+          boxShadow: 'none'
+        }}
+      >
         <Container maxWidth="xl">
-          <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+          <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: 80 }}>
 
             {/* 1. Mobile Menu Button (Left) */}
             <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-              <IconButton size="large" onClick={() => setMobileOpen(true)} color="inherit">
+              <IconButton size="large" onClick={() => setMobileOpen(true)} sx={{ color: 'text.primary' }}>
                 <MenuIcon />
               </IconButton>
             </Box>
 
-            {/* 2. Brand Logo (Center on Mobile, Left on Desktop) */}
+            {/* 2. Brand Logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: { xs: 1, md: 0 } }}>
-              <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 10, borderRadius: '50%' }} />
-              <Typography variant="h6" noWrap component={Link} to="/" sx={{
+              <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 50, marginRight: 15, borderRadius: '50%' }} />
+              <Typography variant="h5" noWrap component={Link} to="/" sx={{
                 mr: 2,
                 display: { xs: 'flex', md: 'flex' },
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.1rem',
+                fontFamily: '"Outfit", sans-serif',
+                fontWeight: 800,
+                letterSpacing: '.05rem',
                 color: 'primary.main',
                 textDecoration: 'none',
               }}>
@@ -170,40 +177,51 @@ function Layout({ apiBase }: { apiBase: string }) {
               </Typography>
             </Box>
 
-            {/* 3. Desktop Navigation (Center) */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', gap: 4 }}>
+            {/* 3. Desktop Navigation (Center) - Animated */}
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', gap: 6 }}>
               {navLinks.map((page) => (
-                <Button key={page.text} component={Link} to={page.path} sx={{ my: 2, color: 'text.primary', display: 'block', fontWeight: 500 }}>
-                  {page.text}
-                </Button>
+                <Box key={page.text} position="relative" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Button
+                    component={Link}
+                    to={page.path}
+                    sx={{
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      '&:hover': { bgcolor: 'transparent', color: 'primary.main' }
+                    }}
+                  >
+                    {page.text}
+                  </Button>
+                </Box>
               ))}
               {isAdmin && (
-                <Button component={Link} to="/admin" sx={{ my: 2, color: 'secondary.main', display: 'block', fontWeight: 600 }}>
-                  Admin Panel
+                <Button component={Link} to="/admin" sx={{ color: 'secondary.main', fontWeight: 600 }}>
+                  Admin
                 </Button>
               )}
             </Box>
 
             {/* 4. User Actions (Right) */}
             <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
-              {/* Cart with distinct label/icon */}
+              {/* Cart Button - Explicitly styled and clickable */}
               <Button
-                color="inherit"
                 onClick={() => setIsCartOpen(true)}
+                sx={{
+                  color: 'text.primary',
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  px: 2,
+                  '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' }
+                }}
                 startIcon={<Badge badgeContent={cartCount} color="error"><ShoppingCartIcon /></Badge>}
-                sx={{ fontWeight: 'bold' }}
               >
                 Cart
               </Button>
 
               {userEmail ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {/* User Name & Sign Out */}
-                  <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
-                    <Typography variant="caption" display="block" sx={{ lineHeight: 1 }}>Hello,</Typography>
-                    <Typography variant="body2" fontWeight="bold">{userEmail.split('@')[0]}</Typography>
-                  </Box>
-                  <IconButton component={Link} to="/profile" color="primary" title="My Profile">
+                  <IconButton component={Link} to="/profile" color="primary">
                     <PersonIcon />
                   </IconButton>
                   <Button
@@ -224,9 +242,8 @@ function Layout({ apiBase }: { apiBase: string }) {
                 <Button
                   variant="contained"
                   color="primary"
-                  size="medium"
                   onClick={() => setLoginOpen(true)}
-                  sx={{ ml: 1, borderRadius: 20, px: 3 }}
+                  sx={{ borderRadius: 20, px: 4, boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)' }}
                 >
                   Login
                 </Button>
@@ -241,18 +258,18 @@ function Layout({ apiBase }: { apiBase: string }) {
       {/* --- Mobile Drawer --- */}
       <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
         <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
-          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
-            <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 10, borderRadius: '50%' }} />
+          <Box sx={{ p: 3, display: 'flex', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
+            <img src="/images/home/logo.jpg" alt="Logo" style={{ height: 40, marginRight: 15, borderRadius: '50%' }} />
             <Typography variant="h6" fontWeight="bold">Herbal Soap</Typography>
           </Box>
-          <List>
+          <List sx={{ pt: 2 }}>
             {navLinks.map((item) => (
-              <ListItemButton key={item.text} component={Link} to={item.path}>
+              <ListItemButton key={item.text} component={Link} to={item.path} sx={{ py: 2 }}>
                 <ListItemIcon><SpaIcon color="secondary" /></ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 600 }} />
               </ListItemButton>
             ))}
-            <Divider sx={{ my: 1 }} />
+            <Divider sx={{ my: 2 }} />
             {isAdmin && (
               <ListItemButton component={Link} to="/admin">
                 <ListItemIcon><SpaIcon color="error" /></ListItemIcon>
