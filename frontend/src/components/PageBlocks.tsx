@@ -126,14 +126,21 @@ export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ c
             <Grid container spacing={4}>
                 {products.map((product) => (
                     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={product.id}>
-                        <Card sx={{ height: '100%' }}>
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none' }} component={Link} to={`/products/${product.id}`}>
                             <CardMedia component="img" height="300" image={product.imageUrl} alt={product.name} />
                             <CardContent>
-                                <Typography variant="h6" gutterBottom>{product.name}</Typography>
-                                <Typography variant="body2" color="text.secondary" mb={2}>{product.description}</Typography>
-                                <Box display="flex" justifyContent="space-between" alignItems="center">
-                                    <Typography variant="h6" color="primary">${product.price}</Typography>
-                                    <Button variant="outlined" size="small">Add to Cart</Button>
+                                <Typography variant="h6" gutterBottom color="text.primary">{product.name}</Typography>
+                                <Typography variant="body2" color="text.secondary" mb={2} sx={{
+                                    display: '-webkit-box',
+                                    overflow: 'hidden',
+                                    WebkitBoxOrient: 'vertical',
+                                    WebkitLineClamp: 3
+                                }}>
+                                    {product.description}
+                                </Typography>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" mt="auto">
+                                    <Typography variant="h6" color="primary">${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</Typography>
+                                    <Button variant="outlined" size="small">View Details</Button>
                                 </Box>
                             </CardContent>
                         </Card>

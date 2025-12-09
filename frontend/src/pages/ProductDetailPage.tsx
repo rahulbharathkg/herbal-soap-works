@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, Grid, Chip, CircularProgress, Paper } from '@mui/material';
+import { Box, Container, Typography, Button, Grid, Chip, CircularProgress, Paper, Divider as TopDivider } from '@mui/material';
 import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -155,11 +155,12 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                 ${product.price.toFixed(2)}
               </Typography>
 
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 6, lineHeight: 1.8, fontSize: '1.1rem' }}>
-                {product.description}
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.8, fontSize: '1.1rem' }}>
+                {product.description.split('Hero Ingredients:')[0]}
               </Typography>
 
-              <Box sx={{ mt: 'auto' }}>
+              {/* Action Buttons */}
+              <Box sx={{ mt: 'auto', mb: 4 }}>
                 <Button
                   variant="contained"
                   size="large"
@@ -172,12 +173,42 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                     fontWeight: 600,
                     boxShadow: '0 8px 20px rgba(74, 20, 140, 0.2)'
                   }}
-                  onClick={() => {
-                    addToCart(product);
-                  }}
+                  onClick={() => addToCart(product)}
                 >
                   Add to Cart
                 </Button>
+              </Box>
+
+              {/* Extra Details (Ingredients, Benefits) */}
+              <Box sx={{ bgcolor: '#f8f9fa', p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" gutterBottom fontWeight="bold">Hero Ingredients 🌿</Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {product.description.includes('Hero Ingredients:') ? product.description.split('Hero Ingredients:')[1] : 'Natural formulation.'}
+                </Typography>
+
+                <TopDivider sx={{ my: 2 }} />
+
+                <Typography variant="h6" gutterBottom fontWeight="bold">Why You'll Love It ❤️</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  • Handcrafted with love<br />
+                  • Chemical-free and organic<br />
+                  • Suitable for sensitive skin
+                </Typography>
+              </Box>
+
+              {/* Fake Reviews Section */}
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom fontWeight="bold">Reviews (3) ⭐⭐⭐⭐⭐</Typography>
+                <Paper elevation={0} sx={{ p: 2, mb: 1, bgcolor: '#fff', border: '1px solid #eee' }}>
+                  <Typography variant="subtitle2" fontWeight="bold">Sarah J.</Typography>
+                  <Typography variant="caption" color="text.secondary">Verified Buyer</Typography>
+                  <Typography variant="body2" mt={1}>"Absolutely love this soap! My skin feels so soft."</Typography>
+                </Paper>
+                <Paper elevation={0} sx={{ p: 2, mb: 1, bgcolor: '#fff', border: '1px solid #eee' }}>
+                  <Typography variant="subtitle2" fontWeight="bold">Mike T.</Typography>
+                  <Typography variant="caption" color="text.secondary">Verified Buyer</Typography>
+                  <Typography variant="body2" mt={1}>"Great scent and very gentle. Highly recommend."</Typography>
+                </Paper>
               </Box>
             </Box>
           </motion.div>
