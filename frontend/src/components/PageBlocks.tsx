@@ -186,18 +186,34 @@ export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
 
     if (!layout || !Array.isArray(layout)) return null;
 
+    // Group adjacent hero blocks
+    const renderedBlocks: React.ReactNode[] = [];
+    let heroGroup: any[] = [];
+
+    layout.forEach((block, index) => {
+        if (block.type === 'hero') {
+            heroGroup.push(block);
+            // If next block is not hero or this is last block, render the group
+            const nextBlock = layout[index + 1];
+            if (!nextBlock || nextBlock.type !== 'hero') {
+                renderedBlocks.push(<HeroCarousel key={`hero-group-${index}`} items={heroGroup} />);
+                heroGroup = [];
+            }
+        } else {
+            // Render other blocks normally
+            switch (block.type) {
+                case 'text': renderedBlocks.push(<TextBlock key={block.id} content={block.content} />); break;
+                case 'image': renderedBlocks.push(<ImageBlock key={block.id} content={block.content} />); break;
+                case 'grid': renderedBlocks.push(<ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />); break;
+                case 'testimonials': renderedBlocks.push(<TestimonialsBlock key={block.id} content={block.content} />); break;
+                default: break;
+            }
+        }
+    });
+
     return (
         <Box>
-            {layout.map((block) => {
-                switch (block.type) {
-                    case 'hero': return <HeroBlock key={block.id} content={block.content} />;
-                    case 'text': return <TextBlock key={block.id} content={block.content} />;
-                    case 'image': return <ImageBlock key={block.id} content={block.content} />;
-                    case 'grid': return <ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />;
-                    case 'testimonials': return <TestimonialsBlock key={block.id} content={block.content} />;
-                    default: return null;
-                }
-            })}
+            {renderedBlocks}
         </Box>
     );
 };

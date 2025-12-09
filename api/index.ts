@@ -145,28 +145,115 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
         }
 
-        // --- ADMIN CONTENT ---
-        if (path === 'admin/content' || path.endsWith('admin/content')) {
-            const contentRepo = dataSource.getRepository(AdminContent);
+    }
+
+        // --- USER PROFILE & ADDRESS ---
+        if (path === 'user/profile' || path.endsWith('user/profile')) {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) return res.status(401).json({ message: 'No token provided' });
+
+        const token = authHeader.split(' ')[1];
+        try {
+            // Ideally verify with jwt.verify, considering 'sign' is imported
+            // For this quick implementation, assuming middleware or simple decode if signature check needed
+            // But we must decode to get ID. 
+            const { verify } = require('jsonwebtoken');
+            const decoded: any = verify(token, process.env.JWT_SECRET || 'default_secret');
+
+            const userRepo = dataSource.getRepository(User);
+            const user = await userRepo.findOne({ where: { id: decoded.userId } });
+
+            if (!user) return res.status(404).json({ message: 'User not found' });
 
             if (method === 'GET') {
-                const content = await contentRepo.find();
-                return res.status(200).json(content);
+                // Return safe user data
+                return res.status(200).json({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    isSubscribed: user.isSubscribed,
+                    addresses: user.addresses || []
+                });
             }
 
             if (method === 'POST') {
-                // Verify token here ideally, but keeping simple for migration
-                const saved = await contentRepo.save(req.body);
-                return res.status(201).json(saved);
+                // Update main profile info
+                if (req.body.name) user.name = req.body.name;
+                if (req.body.isSubscribed !== undefined) user.isSubscribed = req.body.isSubscribed;
+                if (req.body.password) {
+                    const { hash } = require('bcryptjs');
+                    user.password = await hash(req.body.password, 10);
+                }
+
+                await userRepo.save(user);
+                return res.status(200).json({ message: 'Profile updated' });
+            }
+        } catch (e) {
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+    }
+
+    if (path === 'user/address' || path.endsWith('user/address')) {
+        if (method === 'POST') {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) return res.status(401).json({ message: 'No token provided' });
+
+            const token = authHeader.split(' ')[1];
+            try {
+                const { verify } = require('jsonwebtoken');
+                const decoded: any = verify(token, process.env.JWT_SECRET || 'default_secret');
+
+                const userRepo = dataSource.getRepository(User);
+                const user = await userRepo.findOne({ where: { id: decoded.userId } });
+                if (!user) return res.status(404).json({ message: 'User not found' });
+
+                const newAddress = req.body;
+                // Simple logic: Append to addresses array or update if ID provided
+                let addresses = user.addresses || [];
+
+                if (newAddress.id) {
+                    addresses = addresses.map((a: any) => a.id === newAddress.id ? newAddress : a);
+                } else {
+                    newAddress.id = Date.now().toString(); // Simple ID generation
+                    // If default, unset others
+                    if (newAddress.isDefault) {
+                        addresses = addresses.map((a: any) => ({ ...a, isDefault: false }));
+                    }
+                    addresses.push(newAddress);
+                }
+
+                user.addresses = addresses;
+                await userRepo.save(user); // TypeORM should serialize this to jsonb
+
+                return res.status(200).json(user.addresses);
+            } catch (e) {
+                return res.status(401).json({ message: 'Invalid token' });
             }
         }
-
-        return res.status(404).json({ message: `Route not found`, receivedPath: path, originalUrl: url });
-
-    } catch (error: any) {
-        console.error('API Error:', error);
-        return res.status(500).json({ message: error.message });
     }
+
+    // --- ADMIN CONTENT ---
+    if (path === 'admin/content' || path.endsWith('admin/content')) {
+        const contentRepo = dataSource.getRepository(AdminContent);
+
+        if (method === 'GET') {
+            const content = await contentRepo.find();
+            return res.status(200).json(content);
+        }
+
+        if (method === 'POST') {
+            // Verify token here ideally, but keeping simple for migration
+            const saved = await contentRepo.save(req.body);
+            return res.status(201).json(saved);
+        }
+    }
+
+    return res.status(404).json({ message: `Route not found`, receivedPath: path, originalUrl: url });
+
+} catch (error: any) {
+    console.error('API Error:', error);
+    return res.status(500).json({ message: error.message });
+}
 }
 
 export default allowCors(handler);

@@ -39,6 +39,9 @@ export class User {
   @Column({ nullable: true, type: 'bigint' })
   resetPasswordExpires: number | null;
 
+  @Column({ type: 'jsonb', nullable: true })
+  addresses: any[];
+
   @OneToMany(() => Order, (order) => order.user)
   orders: any[];
 }

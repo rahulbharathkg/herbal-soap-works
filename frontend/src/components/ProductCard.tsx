@@ -39,11 +39,13 @@ export default function ProductCard({ product, onView }: ProductCardProps) {
                     overflow: 'hidden',
                     border: '1px solid #e0e0e0',
                     transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                     '&:hover': {
                         border: '1px solid #2E3B29',
                         boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
                     },
                 }}
+                onClick={() => onView && onView(product)}
             >
                 <Box sx={{ position: 'relative', pt: '120%', overflow: 'hidden', bgcolor: '#f5f5f5' }}>
                     <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
