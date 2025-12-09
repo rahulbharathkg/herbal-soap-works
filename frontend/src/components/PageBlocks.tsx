@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, Container, Paper } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import ProductCard, { Product } from './ProductCard';
 
 // --- Types ---
 export interface BlockProps {
@@ -101,8 +102,6 @@ export const ImageBlock: React.FC<BlockProps> = ({ content, onEdit }) => {
 };
 
 // --- Product Grid Block ---
-import ProductCard, { Product } from './ProductCard'; // Ensure import
-import { useNavigate } from 'react-router-dom'; // Ensure import
 
 export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ content, onEdit, apiBase }) => {
     const [products, setProducts] = useState<Product[]>([]);
