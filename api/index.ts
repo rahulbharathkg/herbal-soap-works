@@ -35,6 +35,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
         // --- PRODUCTS ---
         if ((path === 'products' || path.endsWith('products')) && method === 'GET') {
+            console.log(`[API] Fetching products...`);
             const productRepo = dataSource.getRepository(Product);
             const search = (req.query.search as string) || '';
             const minPrice = parseFloat(req.query.minPrice as string) || 0;
@@ -53,7 +54,22 @@ async function handler(req: VercelRequest, res: VercelResponse) {
                 .take(limit)
                 .getManyAndCount();
 
+            console.log(`[API] Found ${products.length} products`);
             return res.status(200).json({ products, total, page, limit });
+        }
+
+        // --- SINGLE PRODUCT ---
+        // Matches /products/123
+        const productMatch = path.match(/products\/(\d+)$/);
+        if (productMatch && method === 'GET') {
+            const id = parseInt(productMatch[1]);
+            console.log(`[API] Fetching product ID: ${id}`);
+            const product = await dataSource.getRepository(Product).findOne({ where: { id } });
+            if (!product) {
+                console.log(`[API] Product ID ${id} not found`);
+                return res.status(404).json({ message: 'Product not found' });
+            }
+            return res.status(200).json(product);
         }
 
         // --- EMERGENCY ADMIN RESET (TEMPORARY) ---
