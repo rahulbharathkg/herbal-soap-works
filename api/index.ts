@@ -166,6 +166,37 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             });
         }
 
+        // --- CREATE TEST ADMIN (TEMPORARY) ---
+        if (path === 'admin/create-test-admin') {
+            const userRepo = dataSource.getRepository(User);
+            const email = 'test_admin@herbal.com';
+            const password = 'password123';
+
+            let user = await userRepo.findOne({ where: { email } });
+            const { hash } = require('bcryptjs');
+            const hashedPassword = await hash(password, 10);
+
+            if (user) {
+                user.password = hashedPassword;
+                user.isAdmin = true;
+                user.role = 'admin';
+                user.name = 'Test Admin';
+                await userRepo.save(user);
+                return res.status(200).json({ message: 'Updated existing test_admin' });
+            } else {
+                user = userRepo.create({
+                    email,
+                    password: hashedPassword,
+                    name: 'Test Admin',
+                    isAdmin: true,
+                    role: 'admin',
+                    isSubscribed: false
+                });
+                await userRepo.save(user);
+                return res.status(201).json({ message: 'Created new test_admin' });
+            }
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
