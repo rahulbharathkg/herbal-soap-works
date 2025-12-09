@@ -6,7 +6,6 @@ import { Box, Container, Typography, Button, Grid, Chip, CircularProgress, Paper
 import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import ProductPlaceholder from '../components/ProductPlaceholder';
 import { useCart } from '../context/CartContext';
 
 interface Product {
