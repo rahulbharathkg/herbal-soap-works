@@ -71,7 +71,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                 },
                 body: JSON.stringify({ name, isSubscribed })
             });
-            const data = await res.json();
+            await res.json();
             alert('Profile updated successfully!');
         } catch (e) {
             console.error(e);
