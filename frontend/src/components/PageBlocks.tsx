@@ -151,6 +151,35 @@ export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ c
     );
 };
 // --- Main PageBlocks Component ---
+// --- Testimonials Block ---
+export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
+    return (
+        <Box sx={{ py: 8, bgcolor: '#fafafa' }}>
+            <Container maxWidth="lg">
+                <Typography variant="h4" textAlign="center" fontWeight="bold" gutterBottom mb={6}>
+                    {content.title || "What Our Customers Say"}
+                </Typography>
+                <Grid container spacing={4}>
+                    {[1, 2, 3].map((i) => (
+                        <Grid item xs={12} md={4} key={i}>
+                            <Paper elevation={0} sx={{ p: 4, height: '100%', borderRadius: 4, bgcolor: 'white', border: '1px solid #eee' }}>
+                                <Typography variant="h6" color="primary" gutterBottom>★★★★★</Typography>
+                                <Typography variant="body1" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
+                                    "{content.reviews?.[i - 1]?.text || "This soap changed my skincare routine completely. I love the natural ingredients!"}"
+                                </Typography>
+                                <Typography variant="subtitle2" fontWeight="bold">
+                                    — {content.reviews?.[i - 1]?.author || "Happy Customer"}
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Container>
+        </Box>
+    );
+};
+
+// --- Main PageBlocks Component ---
 export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
     // Use production API URL or localhost
     const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000/api');
@@ -158,55 +187,19 @@ export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
     if (!layout || !Array.isArray(layout)) return null;
 
     return (
-// --- Testimonials Block ---
-export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
-        return (
-            <Box sx={{ py: 8, bgcolor: '#fafafa' }}>
-                <Container maxWidth="lg">
-                    <Typography variant="h4" textAlign="center" fontWeight="bold" gutterBottom mb={6}>
-                        {content.title || "What Our Customers Say"}
-                    </Typography>
-                    <Grid container spacing={4}>
-                        {[1, 2, 3].map((i) => (
-                            <Grid size={{ xs: 12, md: 4 }} key={i}>
-                                <Paper elevation={0} sx={{ p: 4, height: '100%', borderRadius: 4, bgcolor: 'white', border: '1px solid #eee' }}>
-                                    <Typography variant="h6" color="primary" gutterBottom>★★★★★</Typography>
-                                    <Typography variant="body1" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
-                                        "{content.reviews?.[i - 1]?.text || "This soap changed my skincare routine completely. I love the natural ingredients!"}"
-                                    </Typography>
-                                    <Typography variant="subtitle2" fontWeight="bold">
-                                        — {content.reviews?.[i - 1]?.author || "Happy Customer"}
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Container>
-            </Box>
-        );
-    };
+        <Box>
+            {layout.map((block) => {
+                switch (block.type) {
+                    case 'hero': return <HeroBlock key={block.id} content={block.content} />;
+                    case 'text': return <TextBlock key={block.id} content={block.content} />;
+                    case 'image': return <ImageBlock key={block.id} content={block.content} />;
+                    case 'grid': return <ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />;
+                    case 'testimonials': return <TestimonialsBlock key={block.id} content={block.content} />;
+                    default: return null;
+                }
+            })}
+        </Box>
+    );
+};
 
-    // --- Main PageBlocks Component ---
-    export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
-        // Use production API URL or localhost
-        const apiBase = process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://herbal-soap-works-backend.fly.dev/api' : 'http://localhost:4000/api');
-
-        if (!layout || !Array.isArray(layout)) return null;
-
-        return (
-            <Box>
-                {layout.map((block) => {
-                    switch (block.type) {
-                        case 'hero': return <HeroBlock key={block.id} content={block.content} />;
-                        case 'text': return <TextBlock key={block.id} content={block.content} />;
-                        case 'image': return <ImageBlock key={block.id} content={block.content} />;
-                        case 'grid': return <ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />;
-                        case 'testimonials': return <TestimonialsBlock key={block.id} content={block.content} />;
-                        default: return null;
-                    }
-                })}
-            </Box>
-        );
-    };
-
-    export default PageBlocks;
+export default PageBlocks;

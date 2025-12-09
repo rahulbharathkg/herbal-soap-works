@@ -63,58 +63,54 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
     <Box sx={{ minHeight: '100vh', pb: 8 }}>
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ mt: 8 }}>
-
-
-
-        <Container maxWidth="lg">
-          {loading ? (
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h6" color="text.secondary">Loading products...</Typography>
-            </Box>
-          ) : filteredProducts.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h6" color="text.secondary">No products found matching your search.</Typography>
-            </Box>
-          ) : (
-            <Box sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
-              gap: 4
-            }}>
-              {filteredProducts.map((p, index) => (
-                <motion.div
-                  key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                  <ProductCard product={p} onView={onClickProduct} />
-                </motion.div>
-              ))}
-            </Box>
-          )}
-
-          {/* Pagination */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-            <Button
-              disabled={page <= 1}
-              onClick={() => setPage(p => p - 1)}
-              sx={{ mr: 2 }}
-            >
-              Previous
-            </Button>
-            <Typography sx={{ alignSelf: 'center' }}>
-              Page {page} of {totalPages}
-            </Typography>
-            <Button
-              disabled={page >= totalPages}
-              onClick={() => setPage(p => p + 1)}
-              sx={{ ml: 2 }}
-            >
-              Next
-            </Button>
+        {loading ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">Loading products...</Typography>
           </Box>
-        </Container>
+        ) : filteredProducts.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">No products found matching your search.</Typography>
+          </Box>
+        ) : (
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
+            gap: 4
+          }}>
+            {filteredProducts.map((p, index) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <ProductCard product={p} onView={onClickProduct} />
+              </motion.div>
+            ))}
+          </Box>
+        )}
+
+        {/* Pagination */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+          <Button
+            disabled={page <= 1}
+            onClick={() => setPage(p => p - 1)}
+            sx={{ mr: 2 }}
+          >
+            Previous
+          </Button>
+          <Typography sx={{ alignSelf: 'center' }}>
+            Page {page} of {totalPages}
+          </Typography>
+          <Button
+            disabled={page >= totalPages}
+            onClick={() => setPage(p => p + 1)}
+            sx={{ ml: 2 }}
+          >
+            Next
+          </Button>
+        </Box>
+      </Container>
     </Box>
   );
 }

@@ -136,7 +136,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                         <Box>
                             <Typography variant="h4" fontWeight={700} gutterBottom>Welcome back, {user?.name || 'Friend'}!</Typography>
                             <Grid container spacing={3} sx={{ mb: 4 }}>
-                                <Grid item xs={12} sm={4}>
+                                <Grid size={{ xs: 12, sm: 4 }}>
                                     <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#e3f2fd' }}>
                                         <Typography variant="h3" color="primary.main" fontWeight={700}>{orders.length}</Typography>
                                         <Typography variant="subtitle1">Total Orders</Typography>
