@@ -48,7 +48,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
         console.error('Failed to fetch product:', err);
         setLoading(false);
         // Don't redirect, let the UI show an error state or null
-      });
+      })
       .finally(() => setLoading(false));
   }, [apiBase, id, navigate]);
 
