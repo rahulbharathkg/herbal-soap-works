@@ -101,11 +101,12 @@ export const ImageBlock: React.FC<BlockProps> = ({ content, onEdit }) => {
 };
 
 // --- Product Grid Block ---
-// Note: In a real app, this would fetch products. For now, we'll accept products as a prop or fetch them.
-// To keep it simple, we'll fetch inside or use a context. Let's fetch for now.
+import ProductCard, { Product } from './ProductCard'; // Ensure import
+import { useNavigate } from 'react-router-dom'; // Ensure import
 
 export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ content, onEdit, apiBase }) => {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${apiBase}/products?limit=${content.limit || 4}`)
@@ -126,24 +127,10 @@ export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ c
             <Grid container spacing={4}>
                 {products.map((product) => (
                     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={product.id}>
-                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none' }} component={Link} to={`/products/${product.id}`}>
-                            <CardMedia component="img" height="300" image={product.imageUrl} alt={product.name} />
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom color="text.primary">{product.name}</Typography>
-                                <Typography variant="body2" color="text.secondary" mb={2} sx={{
-                                    display: '-webkit-box',
-                                    overflow: 'hidden',
-                                    WebkitBoxOrient: 'vertical',
-                                    WebkitLineClamp: 3
-                                }}>
-                                    {product.description}
-                                </Typography>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mt="auto">
-                                    <Typography variant="h6" color="primary">${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</Typography>
-                                    <Button variant="outlined" size="small">View Details</Button>
-                                </Box>
-                            </CardContent>
-                        </Card>
+                        <ProductCard
+                            product={product}
+                            onView={(p) => navigate(`/products/${p.id}`)}
+                        />
                     </Grid>
                 ))}
             </Grid>
