@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Container, Button } from '@mui/material';
+import { Box, Typography, Container, Button, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ProductCard, { Product } from '../components/ProductCard';
@@ -68,12 +68,21 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ mt: 8 }}>
         {loading ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h6" color="text.secondary">Loading products...</Typography>
+          <Box sx={{ textAlign: 'center', py: 12 }}>
+            <CircularProgress size={40} thickness={4} />
+            <Typography variant="body1" sx={{ mt: 2 }} color="text.secondary">Discovering soaps...</Typography>
           </Box>
         ) : filteredProducts.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h6" color="text.secondary">No products found matching your search.</Typography>
+          <Box sx={{ textAlign: 'center', py: 12 }}>
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
+              <Typography variant="h2">🍃</Typography>
+              <Typography variant="h5" color="text.secondary" fontWeight={600} gutterBottom sx={{ mt: 2 }}>
+                No soaps found.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mb={3}>
+                Try adjusting your filters or check back later for new stock.
+              </Typography>
+            </motion.div>
           </Box>
         ) : (
           <Box sx={{
@@ -84,9 +93,9 @@ export default function ProductsPage({ apiBase }: { apiBase: string }) {
             {filteredProducts.map((p, index) => (
               <motion.div
                 key={p.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 100 }}
               >
                 <ProductCard product={p} onView={onClickProduct} />
               </motion.div>
