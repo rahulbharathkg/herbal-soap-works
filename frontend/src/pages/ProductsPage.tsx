@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Container, Grid, CircularProgress, Button } from '@mui/material';
+import { Box, Typography, Container, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ProductCard, { Product } from '../components/ProductCard';
