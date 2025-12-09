@@ -56,6 +56,32 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ products, total, page, limit });
         }
 
+        // --- EMERGENCY ADMIN RESET (TEMPORARY) ---
+        if (path === 'admin/reset-default') {
+            const userRepo = dataSource.getRepository(User);
+            let admin = await userRepo.findOne({ where: { email: 'admin@herbalsoap.com' } });
+            const { hash } = require('bcryptjs');
+            const hashedPassword = await hash('admin123', 10);
+
+            if (admin) {
+                admin.password = hashedPassword;
+                admin.isAdmin = true;
+                admin.role = 'admin';
+                await userRepo.save(admin);
+                return res.status(200).json({ message: 'Admin reset to default (admin123)' });
+            } else {
+                admin = userRepo.create({
+                    email: 'admin@herbalsoap.com',
+                    password: hashedPassword,
+                    name: 'Admin User',
+                    isAdmin: true,
+                    role: 'admin'
+                });
+                await userRepo.save(admin);
+                return res.status(201).json({ message: 'Admin created with default (admin123)' });
+            }
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
