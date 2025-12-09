@@ -25,12 +25,9 @@ interface Order {
 
 export default function UserDashboard({ apiBase }: { apiBase: string }) {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'settings'>('overview');
-    const [user, setUser] = useState<User | null>(null);
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [name, setName] = useState('');
-    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [addresses, setAddresses] = useState<any[]>([]);
+    const [newAddress, setNewAddress] = useState({ label: '', street: '', city: '', zip: '' });
+    const [showAddressForm, setShowAddressForm] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('hsw_token');
@@ -41,13 +38,14 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
 
         // Fetch user profile and orders
         Promise.all([
-            fetch(`${apiBase} /api/auth / profile`, { headers: { Authorization: `Bearer ${token} ` } }).then(r => r.json()),
-            fetch(`${apiBase} /api/orders`, { headers: { Authorization: `Bearer ${token} ` } }).then(r => r.json())
+            fetch(`${apiBase}/user/profile`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+            fetch(`${apiBase}/api/orders`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
         ]).then(([userData, ordersData]) => {
-            if (userData.user) {
-                setUser(userData.user);
-                setName(userData.user.name || '');
-                setIsSubscribed(userData.user.isSubscribed || false);
+            if (userData) {
+                setUser(userData);
+                setName(userData.name || '');
+                setIsSubscribed(userData.isSubscribed || false);
+                setAddresses(userData.addresses || []);
             }
             if (Array.isArray(ordersData)) {
                 setOrders(ordersData);
@@ -59,22 +57,44 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
     const handleUpdateProfile = async () => {
         const token = localStorage.getItem('hsw_token');
         try {
-            const res = await fetch(`${apiBase} /api/auth / profile`, {
-                method: 'PATCH',
+            const res = await fetch(`${apiBase}/user/profile`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token} `
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ name, isSubscribed })
             });
             const data = await res.json();
-            if (data.user) {
-                setUser(data.user);
-                alert('Profile updated successfully!');
-            }
+            alert('Profile updated successfully!');
         } catch (e) {
             console.error(e);
             alert('Failed to update profile');
+        }
+    };
+
+    const handleAddAddress = async () => {
+        const token = localStorage.getItem('hsw_token');
+        try {
+            // Basic validation
+            if (!newAddress.street || !newAddress.city) return alert('Please fill in street and city');
+
+            const res = await fetch(`${apiBase}/user/address`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                    id: Date.now().toString(),
+                    ...newAddress,
+                    isDefault: addresses.length === 0
+                })
+            });
+            const updatedAddresses = await res.json();
+            setAddresses(updatedAddresses);
+            setShowAddressForm(false);
+            setNewAddress({ label: '', street: '', city: '', zip: '' });
+        } catch (e) {
+            console.error(e);
+            alert('Failed to save address');
         }
     };
 
@@ -111,6 +131,12 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                                 <ListItemButton selected={activeTab === 'orders'} onClick={() => setActiveTab('orders')}>
                                     <ListItemIcon><ShoppingBagIcon color={activeTab === 'orders' ? 'primary' : 'inherit'} /></ListItemIcon>
                                     <ListItemText primary="My Orders" />
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton selected={activeTab === 'addresses'} onClick={() => setActiveTab('addresses')}>
+                                    <ListItemIcon><SettingsIcon color={activeTab === 'addresses' ? 'primary' : 'inherit'} /></ListItemIcon>
+                                    <ListItemText primary="Addresses" />
                                 </ListItemButton>
                             </ListItem>
                             <ListItem disablePadding>
@@ -190,6 +216,57 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                                         </Box>
                                     </Paper>
                                 ))
+                            )}
+                        </Box>
+                    )}
+
+                    {activeTab === 'addresses' && (
+                        <Box>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+                                <Typography variant="h5" fontWeight={700}>My Addresses</Typography>
+                                <Button variant="contained" onClick={() => setShowAddressForm(!showAddressForm)}>
+                                    {showAddressForm ? 'Cancel' : 'Add New Address'}
+                                </Button>
+                            </Box>
+
+                            {showAddressForm && (
+                                <Paper sx={{ p: 3, mb: 4, bgcolor: '#f8f9fa' }}>
+                                    <Typography variant="h6" gutterBottom>Add Address</Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid size={{ xs: 12 }}>
+                                            <TextField fullWidth label="Label (e.g. Home, Office)" value={newAddress.label} onChange={e => setNewAddress({ ...newAddress, label: e.target.value })} />
+                                        </Grid>
+                                        <Grid size={{ xs: 12 }}>
+                                            <TextField fullWidth label="Street Address" value={newAddress.street} onChange={e => setNewAddress({ ...newAddress, street: e.target.value })} />
+                                        </Grid>
+                                        <Grid size={{ xs: 6 }}>
+                                            <TextField fullWidth label="City" value={newAddress.city} onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
+                                        </Grid>
+                                        <Grid size={{ xs: 6 }}>
+                                            <TextField fullWidth label="Zip Code" value={newAddress.zip} onChange={e => setNewAddress({ ...newAddress, zip: e.target.value })} />
+                                        </Grid>
+                                        <Grid size={{ xs: 12 }}>
+                                            <Button variant="contained" onClick={handleAddAddress}>Save Address</Button>
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
+                            )}
+
+                            {addresses.length === 0 && !showAddressForm ? (
+                                <Typography color="text.secondary">No addresses saved yet.</Typography>
+                            ) : (
+                                <Grid container spacing={3}>
+                                    {addresses.map((addr: any, idx: number) => (
+                                        <Grid size={{ xs: 12, md: 6 }} key={idx}>
+                                            <Paper sx={{ p: 3, border: addr.isDefault ? '2px solid #2E3B29' : '1px solid #ddd', position: 'relative' }}>
+                                                {addr.isDefault && <Chip label="Default" size="small" color="primary" sx={{ position: 'absolute', top: 10, right: 10 }} />}
+                                                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>{addr.label || 'Address'}</Typography>
+                                                <Typography variant="body2">{addr.street}</Typography>
+                                                <Typography variant="body2">{addr.city}, {addr.zip}</Typography>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
+                                </Grid>
                             )}
                         </Box>
                     )}

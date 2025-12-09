@@ -228,6 +228,69 @@ export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
     );
 };
 
+// --- Feature Panel Block (Modern, distinct from Hero) ---
+export const FeaturePanel: React.FC<BlockProps> = ({ content }) => {
+    return (
+        <Box sx={{ py: 10, bgcolor: '#fdfbf7' }}>
+            <Container maxWidth="lg">
+                <Grid container spacing={6} alignItems="center">
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                            <Box
+                                component="img"
+                                src={content.imageUrl}
+                                alt={content.title}
+                                sx={{
+                                    width: '100%',
+                                    height: '500px',
+                                    objectFit: 'cover',
+                                    borderRadius: '20px 0 20px 0', // Modern edgy definition
+                                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)'
+                                }}
+                            />
+                        </motion.div>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}>
+                            <Typography variant="overline" color="secondary" fontWeight="bold" letterSpacing={2} gutterBottom>
+                                CUSTOM COLLECTION
+                            </Typography>
+                            <Typography variant="h2" fontWeight={800} color="primary" gutterBottom sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
+                                {content.title}
+                            </Typography>
+                            <Typography variant="h6" color="text.secondary" paragraph sx={{ mb: 4, fontWeight: 300, lineHeight: 1.8 }}>
+                                {content.subtitle}
+                            </Typography>
+                            <Button
+                                component={Link}
+                                to={content.link || "/custom-soap"}
+                                variant="contained"
+                                size="large"
+                                sx={{
+                                    px: 6,
+                                    py: 2,
+                                    borderRadius: 0,
+                                    bgcolor: 'primary.main',
+                                    color: 'white',
+                                    boxShadow: 'none',
+                                    fontSize: '1.1rem',
+                                    '&:hover': {
+                                        bgcolor: 'primary.dark',
+                                        transform: 'translateY(-2px)'
+                                    },
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                {content.buttonText || "Start Creating"}
+                            </Button>
+                        </motion.div>
+                    </Grid>
+                </Grid>
+            </Container>
+        </Box>
+    );
+};
+
 // --- Main PageBlocks Component ---
 export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
     // Use production API URL or localhost
@@ -253,6 +316,7 @@ export const PageBlocks: React.FC<{ layout: any[] }> = ({ layout }) => {
             switch (block.type) {
                 case 'text': renderedBlocks.push(<TextBlock key={block.id} content={block.content} />); break;
                 case 'image': renderedBlocks.push(<ImageBlock key={block.id} content={block.content} />); break;
+                case 'feature-panel': renderedBlocks.push(<FeaturePanel key={block.id} content={block.content} />); break;
                 case 'grid': renderedBlocks.push(<ProductGridBlock key={block.id} content={block.content} apiBase={apiBase} />); break;
                 case 'testimonials': renderedBlocks.push(<TestimonialsBlock key={block.id} content={block.content} />); break;
                 default: break;
