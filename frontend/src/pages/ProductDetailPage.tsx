@@ -73,8 +73,17 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
     );
   }
 
-  const images = product.images ? JSON.parse(product.images) : [];
-  if (product.imageUrl && !images.includes(product.imageUrl)) {
+  const images = React.useMemo(() => {
+    if (!product || !product.images) return [];
+    try {
+      return JSON.parse(product.images);
+    } catch (e) {
+      console.error('Failed to parse images JSON', e);
+      return [];
+    }
+  }, [product]);
+
+  if (product && product.imageUrl && !images.includes(product.imageUrl)) {
     images.unshift(product.imageUrl);
   }
 
