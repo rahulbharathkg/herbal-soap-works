@@ -27,6 +27,16 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   const [tabIndex, setTabIndex] = useState(0);
   const { addToCart } = useCart();
 
+  const images = React.useMemo(() => {
+    if (!product || !product.images) return [];
+    try {
+      return JSON.parse(product.images);
+    } catch (e) {
+      console.error('Failed to parse images JSON', e);
+      return [];
+    }
+  }, [product]);
+
   useEffect(() => {
     fetch(`${apiBase}/products/${id}`)
       .then(res => {
@@ -73,17 +83,8 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
     );
   }
 
-  const images = React.useMemo(() => {
-    if (!product || !product.images) return [];
-    try {
-      return JSON.parse(product.images);
-    } catch (e) {
-      console.error('Failed to parse images JSON', e);
-      return [];
-    }
-  }, [product]);
-
-  if (product && product.imageUrl && !images.includes(product.imageUrl)) {
+  // Ensure main image is in the list
+  if (product.imageUrl && !images.includes(product.imageUrl)) {
     images.unshift(product.imageUrl);
   }
 
