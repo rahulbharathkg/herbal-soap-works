@@ -45,9 +45,10 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
         }
       })
       .catch(err => {
-        console.error(err);
-        navigate('/products');
-      })
+        console.error('Failed to fetch product:', err);
+        setLoading(false);
+        // Don't redirect, let the UI show an error state or null
+      });
       .finally(() => setLoading(false));
   }, [apiBase, id, navigate]);
 
@@ -59,7 +60,15 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
     );
   }
 
-  if (!product) return null;
+  if (!product) {
+    return (
+      <Container sx={{ py: 10, textAlign: 'center' }}>
+        <Typography variant="h5" color="error" gutterBottom>Product Not Found</Typography>
+        <Typography variant="body1" mb={4}>We couldn't load the product details. Please check your connection or try again.</Typography>
+        <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/products')}>Back to Products</Button>
+      </Container>
+    );
+  }
 
   const images = product.images ? JSON.parse(product.images) : [];
   if (product.imageUrl && !images.includes(product.imageUrl)) {
