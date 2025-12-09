@@ -1,3 +1,4 @@
+```
 import React, { useEffect, useState } from 'react';
 import { Box, Container, Typography, Grid, Paper, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, Button, TextField, Switch, FormControlLabel, Chip, CircularProgress } from '@mui/material';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
@@ -40,8 +41,8 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
 
         // Fetch user profile and orders
         Promise.all([
-            fetch(`${apiBase}/api/auth/profile`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-            fetch(`${apiBase}/api/orders`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
+            fetch(`${ apiBase } /api/auth / profile`, { headers: { Authorization: `Bearer ${ token } ` } }).then(r => r.json()),
+            fetch(`${ apiBase } /api/orders`, { headers: { Authorization: `Bearer ${ token } ` } }).then(r => r.json())
         ]).then(([userData, ordersData]) => {
             if (userData.user) {
                 setUser(userData.user);
@@ -58,11 +59,11 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
     const handleUpdateProfile = async () => {
         const token = localStorage.getItem('hsw_token');
         try {
-            const res = await fetch(`${apiBase}/api/auth/profile`, {
+            const res = await fetch(`${ apiBase } /api/auth / profile`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${ token } `
                 },
                 body: JSON.stringify({ name, isSubscribed })
             });
@@ -135,7 +136,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                         <Box>
                             <Typography variant="h4" fontWeight={700} gutterBottom>Welcome back, {user?.name || 'Friend'}!</Typography>
                             <Grid container spacing={3} sx={{ mb: 4 }}>
-                                <Grid size={{ xs: 12, sm: 4 }}>
+                                <Grid item xs={12} sm={4}>
                                     <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#e3f2fd' }}>
                                         <Typography variant="h3" color="primary.main" fontWeight={700}>{orders.length}</Typography>
                                         <Typography variant="subtitle1">Total Orders</Typography>

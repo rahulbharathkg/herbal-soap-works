@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { getDataSource } from './shared/db';
 import { AdminContent } from './shared/AdminContent';
 
@@ -21,6 +22,18 @@ const homeLayout = [
             buttonText: 'Start Customizing',
             link: '/custom-soap',
             imageUrl: '/images/home/customised.jpg'
+        }
+    },
+    {
+        id: 'testimonials-1',
+        type: 'testimonials',
+        content: {
+            title: 'Customer Stories',
+            reviews: [
+                { text: "The best organic soap I've ever used. My acne cleared up in weeks!", author: "Emily R." },
+                { text: "I love the custom soap builder. Made a perfect gift for my mom.", author: "David K." },
+                { text: "Gentle, moisturizing, and smells divine. Highly recommended!", author: "Sarah L." }
+            ]
         }
     },
     {
