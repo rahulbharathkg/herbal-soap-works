@@ -109,6 +109,36 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ message: 'User lavanya@herbal promoted to ADMIN successfully' });
         }
 
+        // --- FIX IMAGES (TEMPORARY) ---
+        if (path === 'admin/fix-images') {
+            const productRepo = dataSource.getRepository(Product);
+            const products = await productRepo.find();
+
+            const images = [
+                'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?ixlib=rb-4.0.3', // Soap 1
+                'https://images.unsplash.com/photo-1596462502278-27bfdd403348?ixlib=rb-4.0.3', // Soap 2
+                'https://images.unsplash.com/photo-1547793549-127be1d4e92d?ixlib=rb-4.0.3', // Soap 3
+                'https://images.unsplash.com/photo-1612808074350-440b85b46d71?ixlib=rb-4.0.3', // Soap 4
+                'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3', // Soap 5
+            ];
+
+            for (let i = 0; i < products.length; i++) {
+                const p = products[i];
+                // Assign a random high-quality image if it's missing or using a placeholder
+                if (!p.imageUrl || p.imageUrl.includes('placeholder')) {
+                    p.imageUrl = images[i % images.length];
+                    // Also update the gallery images
+                    p.images = JSON.stringify([
+                        p.imageUrl,
+                        images[(i + 1) % images.length],
+                        images[(i + 2) % images.length]
+                    ]);
+                    await productRepo.save(p);
+                }
+            }
+            return res.status(200).json({ message: `Updated images for ${products.length} products` });
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
