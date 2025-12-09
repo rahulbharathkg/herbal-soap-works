@@ -115,8 +115,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
             if (!user || !(await compare(password, user.password))) return res.status(401).json({ message: 'Invalid credentials' });
-            const token = sign({ userId: user.id, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
-            return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
+            const token = sign({ userId: user.id, email: user.email, role: user.role, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
+            return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
         }
 
         if ((path === 'register' || path.endsWith('register')) && method === 'POST') {
@@ -128,8 +128,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             const hashedPassword = await hash(password, 10);
             const newUser = userRepo.create({ email, password: hashedPassword, name, isSubscribed: isSubscribed || false, role: 'user', isAdmin: false });
             await userRepo.save(newUser);
-            const token = sign({ userId: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
-            return res.status(201).json({ token, user: { id: newUser.id, email: newUser.email, name: newUser.name } });
+            const token = sign({ userId: newUser.id, email: newUser.email, role: newUser.role, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
+            return res.status(201).json({ token, user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role } });
         }
 
         // --- ADMIN ALL ---
@@ -138,7 +138,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
             if (!user || !user.isAdmin || !(await compare(password, user.password))) return res.status(401).json({ message: 'Invalid credentials' });
-            const token = sign({ userId: user.id, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
+            const token = sign({ userId: user.id, email: user.email, role: user.role, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
             return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
         }
 
