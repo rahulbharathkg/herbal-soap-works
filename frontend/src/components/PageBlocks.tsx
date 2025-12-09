@@ -151,6 +151,55 @@ export const ProductGridBlock: React.FC<BlockProps & { apiBase: string }> = ({ c
     );
 };
 // --- Main PageBlocks Component ---
+// --- Hero Carousel Block ---
+export const HeroCarousel: React.FC<{ items: any[], onEdit?: () => void }> = ({ items, onEdit }) => {
+    const [current, setCurrent] = useState(0);
+
+    useEffect(() => {
+        if (items.length <= 1) return;
+        const timer = setInterval(() => {
+            setCurrent(c => (c + 1) % items.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [items.length]);
+
+    if (!items || items.length === 0) return null;
+
+    return (
+        <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+            <motion.div
+                animate={{ x: `-${current * 100}%` }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                style={{ display: 'flex', width: `${items.length * 100}%` }}
+            >
+                {items.map((item, idx) => (
+                    <Box key={idx} sx={{ width: '100%', flexShrink: 0 }}>
+                        <HeroBlock content={item.content} onEdit={onEdit} />
+                    </Box>
+                ))}
+            </motion.div>
+
+            {items.length > 1 && (
+                <Box sx={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 1, zIndex: 2 }}>
+                    {items.map((_, idx) => (
+                        <Box
+                            key={idx}
+                            onClick={() => setCurrent(idx)}
+                            sx={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: '50%',
+                                bgcolor: current === idx ? 'white' : 'rgba(255,255,255,0.5)',
+                                cursor: 'pointer'
+                            }}
+                        />
+                    ))}
+                </Box>
+            )}
+        </Box>
+    );
+};
+
 // --- Testimonials Block ---
 export const TestimonialsBlock: React.FC<BlockProps> = ({ content }) => {
     return (

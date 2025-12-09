@@ -22,22 +22,15 @@ const allowCors = (fn: any) => async (req: VercelRequest, res: VercelResponse) =
 
 async function handler(req: VercelRequest, res: VercelResponse) {
     const { url = '', method } = req;
-    const path = url.split('?')[0].replace(/^\/?api\//, '').replace(/^\//, ''); // Robustly remove /api/ and leading slashes
+    const path = url.split('?')[0].replace(/^\/?api\//, '').replace(/^\//, '');
     console.log(`[API] ${method} ${url} -> ${path}`);
-
-    console.log(`[API] ${method} ${path}`);
 
     try {
         const dataSource = await getDataSource();
 
         // --- HEALTH CHECK ---
         if (path === 'health' || path.endsWith('health')) {
-            return res.status(200).json({
-                status: 'ok',
-                timestamp: new Date().toISOString(),
-                env: process.env.NODE_ENV,
-                db: 'connected'
-            });
+            return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
         }
 
         // --- PRODUCTS ---
@@ -63,197 +56,103 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json({ products, total, page, limit });
         }
 
-        // --- CUSTOMER LOGIN ---
+        // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
-
-            if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-
-            const isValid = await compare(password, user.password);
-            if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
-
-            const token = sign(
-                { userId: user.id, email: user.email, isAdmin: user.isAdmin },
-                process.env.JWT_SECRET || 'default_secret',
-                { expiresIn: '24h' }
-            );
-
+            if (!user || !(await compare(password, user.password))) return res.status(401).json({ message: 'Invalid credentials' });
+            const token = sign({ userId: user.id, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
             return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
         }
 
-        // --- CUSTOMER REGISTER ---
         if ((path === 'register' || path.endsWith('register')) && method === 'POST') {
             const { email, password, name, isSubscribed } = req.body;
             const userRepo = dataSource.getRepository(User);
+            if (await userRepo.findOne({ where: { email } })) return res.status(400).json({ message: 'Email already exists' });
 
-            const existing = await userRepo.findOne({ where: { email } });
-            if (existing) return res.status(400).json({ message: 'Email already exists' });
-
-            // Hash password (using bcryptjs directly here for simplicity in migration)
-            // Note: In a real app, use a helper. For now, assuming bcryptjs is available.
-            // We need to import hash from bcryptjs.
-            // Let's assume the User entity hooks handle hashing or we do it here.
-            // Checking User.ts... it doesn't seem to have BeforeInsert hooks shown.
-            // I'll add hashing here.
             const { hash } = require('bcryptjs');
             const hashedPassword = await hash(password, 10);
-
-            const newUser = userRepo.create({
-                email,
-                password: hashedPassword,
-                name,
-                isSubscribed: isSubscribed || false,
-                role: 'user',
-                isAdmin: false
-            });
-
+            const newUser = userRepo.create({ email, password: hashedPassword, name, isSubscribed: isSubscribed || false, role: 'user', isAdmin: false });
             await userRepo.save(newUser);
-
-            // Auto-login after register
-            const token = sign(
-                { userId: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
-                process.env.JWT_SECRET || 'default_secret',
-                { expiresIn: '24h' }
-            );
-
+            const token = sign({ userId: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
             return res.status(201).json({ token, user: { id: newUser.id, email: newUser.email, name: newUser.name } });
         }
 
-        // --- ADMIN LOGIN ---
+        // --- ADMIN ALL ---
         if ((path === 'admin/login' || path.endsWith('admin/login')) && method === 'POST') {
             const { email, password } = req.body;
             const userRepo = dataSource.getRepository(User);
             const user = await userRepo.findOne({ where: { email } });
-
-            if (!user || !user.isAdmin) {
-                return res.status(401).json({ message: 'Invalid credentials' });
-            }
-
-            const isValid = await compare(password, user.password);
-            if (!isValid) {
-                return res.status(401).json({ message: 'Invalid credentials' });
-            }
-
-            const token = sign(
-                { userId: user.id, email: user.email, isAdmin: user.isAdmin },
-                process.env.JWT_SECRET || 'default_secret',
-                { expiresIn: '24h' }
-            );
-
+            if (!user || !user.isAdmin || !(await compare(password, user.password))) return res.status(401).json({ message: 'Invalid credentials' });
+            const token = sign({ userId: user.id, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '24h' });
             return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
         }
 
-    }
-
-        // --- USER PROFILE & ADDRESS ---
-        if (path === 'user/profile' || path.endsWith('user/profile')) {
-        const authHeader = req.headers.authorization;
-        if (!authHeader) return res.status(401).json({ message: 'No token provided' });
-
-        const token = authHeader.split(' ')[1];
-        try {
-            // Ideally verify with jwt.verify, considering 'sign' is imported
-            // For this quick implementation, assuming middleware or simple decode if signature check needed
-            // But we must decode to get ID. 
-            const { verify } = require('jsonwebtoken');
-            const decoded: any = verify(token, process.env.JWT_SECRET || 'default_secret');
-
-            const userRepo = dataSource.getRepository(User);
-            const user = await userRepo.findOne({ where: { id: decoded.userId } });
-
-            if (!user) return res.status(404).json({ message: 'User not found' });
-
-            if (method === 'GET') {
-                // Return safe user data
-                return res.status(200).json({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    isSubscribed: user.isSubscribed,
-                    addresses: user.addresses || []
-                });
-            }
-
-            if (method === 'POST') {
-                // Update main profile info
-                if (req.body.name) user.name = req.body.name;
-                if (req.body.isSubscribed !== undefined) user.isSubscribed = req.body.isSubscribed;
-                if (req.body.password) {
-                    const { hash } = require('bcryptjs');
-                    user.password = await hash(req.body.password, 10);
-                }
-
-                await userRepo.save(user);
-                return res.status(200).json({ message: 'Profile updated' });
-            }
-        } catch (e) {
-            return res.status(401).json({ message: 'Invalid token' });
+        if (path === 'admin/content' || path.endsWith('admin/content')) {
+            const contentRepo = dataSource.getRepository(AdminContent);
+            if (method === 'GET') return res.status(200).json(await contentRepo.find());
+            if (method === 'POST') return res.status(201).json(await contentRepo.save(req.body));
         }
-    }
 
-    if (path === 'user/address' || path.endsWith('user/address')) {
-        if (method === 'POST') {
-            const authHeader = req.headers.authorization;
-            if (!authHeader) return res.status(401).json({ message: 'No token provided' });
-
-            const token = authHeader.split(' ')[1];
+        // --- USER PROFILE ---
+        if (path === 'user/profile' || path.endsWith('user/profile')) {
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) return res.status(401).json({ message: 'No token' });
             try {
                 const { verify } = require('jsonwebtoken');
                 const decoded: any = verify(token, process.env.JWT_SECRET || 'default_secret');
-
-                const userRepo = dataSource.getRepository(User);
-                const user = await userRepo.findOne({ where: { id: decoded.userId } });
+                const user = await dataSource.getRepository(User).findOne({ where: { id: decoded.userId } });
                 if (!user) return res.status(404).json({ message: 'User not found' });
 
-                const newAddress = req.body;
-                // Simple logic: Append to addresses array or update if ID provided
-                let addresses = user.addresses || [];
-
-                if (newAddress.id) {
-                    addresses = addresses.map((a: any) => a.id === newAddress.id ? newAddress : a);
-                } else {
-                    newAddress.id = Date.now().toString(); // Simple ID generation
-                    // If default, unset others
-                    if (newAddress.isDefault) {
-                        addresses = addresses.map((a: any) => ({ ...a, isDefault: false }));
-                    }
-                    addresses.push(newAddress);
+                if (method === 'GET') {
+                    return res.status(200).json({ id: user.id, name: user.name, email: user.email, isSubscribed: user.isSubscribed, addresses: user.addresses || [] });
                 }
+                if (method === 'POST') {
+                    if (req.body.name) user.name = req.body.name;
+                    if (req.body.isSubscribed !== undefined) user.isSubscribed = req.body.isSubscribed;
+                    if (req.body.password) {
+                        const { hash } = require('bcryptjs');
+                        user.password = await hash(req.body.password, 10);
+                    }
+                    await dataSource.getRepository(User).save(user);
+                    return res.status(200).json({ message: 'Profile updated' });
+                }
+            } catch (e) { return res.status(401).json({ message: 'Invalid token' }); }
+        }
 
-                user.addresses = addresses;
-                await userRepo.save(user); // TypeORM should serialize this to jsonb
+        // --- USER ADDRESS ---
+        if (path === 'user/address' || path.endsWith('user/address')) {
+            if (method === 'POST') {
+                const token = req.headers.authorization?.split(' ')[1];
+                if (!token) return res.status(401).json({ message: 'No token' });
+                try {
+                    const { verify } = require('jsonwebtoken');
+                    const decoded: any = verify(token, process.env.JWT_SECRET || 'default_secret');
+                    const user = await dataSource.getRepository(User).findOne({ where: { id: decoded.userId } });
+                    if (!user) return res.status(404).json({ message: 'User not found' });
 
-                return res.status(200).json(user.addresses);
-            } catch (e) {
-                return res.status(401).json({ message: 'Invalid token' });
+                    const newAddress = req.body;
+                    let addresses = user.addresses || [];
+                    if (newAddress.id) {
+                        addresses = addresses.map((a: any) => a.id === newAddress.id ? newAddress : a);
+                    } else {
+                        newAddress.id = Date.now().toString();
+                        if (newAddress.isDefault) addresses = addresses.map((a: any) => ({ ...a, isDefault: false }));
+                        addresses.push(newAddress);
+                    }
+                    user.addresses = addresses;
+                    await dataSource.getRepository(User).save(user);
+                    return res.status(200).json(user.addresses);
+                } catch (e) { return res.status(401).json({ message: 'Invalid token' }); }
             }
         }
+
+        return res.status(404).json({ message: `Route not found`, path });
+    } catch (error: any) {
+        console.error('API Error:', error);
+        return res.status(500).json({ message: error.message });
     }
-
-    // --- ADMIN CONTENT ---
-    if (path === 'admin/content' || path.endsWith('admin/content')) {
-        const contentRepo = dataSource.getRepository(AdminContent);
-
-        if (method === 'GET') {
-            const content = await contentRepo.find();
-            return res.status(200).json(content);
-        }
-
-        if (method === 'POST') {
-            // Verify token here ideally, but keeping simple for migration
-            const saved = await contentRepo.save(req.body);
-            return res.status(201).json(saved);
-        }
-    }
-
-    return res.status(404).json({ message: `Route not found`, receivedPath: path, originalUrl: url });
-
-} catch (error: any) {
-    console.error('API Error:', error);
-    return res.status(500).json({ message: error.message });
-}
 }
 
 export default allowCors(handler);
