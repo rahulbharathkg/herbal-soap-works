@@ -197,19 +197,16 @@ function Layout({ apiBase }: { apiBase: string }) {
               ))}
               {isAdmin && (
                 <Button component={Link} to="/admin" sx={{ color: 'secondary.main', fontWeight: 600 }}>
-                  Admin
-                </Button>
-              )}
                 </Button>
               )}
               {/* Dev Helper: Force refresh if they just promoted themselves */}
               {!isAdmin && (
-                  <Button size="small" sx={{ fontSize: '0.7rem', color: 'text.secondary' }} onClick={() => {
-                      localStorage.removeItem('hsw_token');
-                      window.location.href = '/';
-                  }}>
-                      Not Admin? Relogin
-                  </Button>
+                <Button size="small" sx={{ fontSize: '0.7rem', color: 'text.secondary' }} onClick={() => {
+                  localStorage.removeItem('hsw_token');
+                  window.location.href = '/';
+                }}>
+                  Not Admin? Relogin
+                </Button>
               )}
             </Box>
 
@@ -266,7 +263,7 @@ function Layout({ apiBase }: { apiBase: string }) {
 
       <CartDrawer />
 
-      {/* --- Mobile Drawer --- */ }
+      {/* --- Mobile Drawer --- */}
       <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
         <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
           <Box sx={{ p: 3, display: 'flex', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
