@@ -82,6 +82,17 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             }
         }
 
+        if (path === 'admin/promote-lavanya') {
+            const userRepo = dataSource.getRepository(User);
+            const user = await userRepo.findOne({ where: { email: 'lavanya@herbal' } });
+            if (!user) return res.status(404).json({ message: 'User lavanya@herbal not found' });
+
+            user.isAdmin = true;
+            user.role = 'admin';
+            await userRepo.save(user);
+            return res.status(200).json({ message: 'User lavanya@herbal promoted to ADMIN successfully' });
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
