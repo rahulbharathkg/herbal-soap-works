@@ -5,7 +5,7 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 
 interface User {
@@ -34,6 +34,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
     const [addresses, setAddresses] = useState<any[]>([]);
     const [newAddress, setNewAddress] = useState({ label: '', street: '', city: '', zip: '' });
     const [showAddressForm, setShowAddressForm] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('hsw_token');
@@ -52,6 +53,9 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                 setName(userData.name || '');
                 setIsSubscribed(userData.isSubscribed || false);
                 setAddresses(userData.addresses || []);
+                // Check if user is admin from token
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setIsAdmin(!!(payload && payload.role === 'admin'));
             }
             if (Array.isArray(ordersData)) {
                 setOrders(ordersData);
@@ -117,7 +121,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
         <Container maxWidth="lg" sx={{ py: 6 }}>
             <Grid container spacing={4}>
                 {/* Sidebar */}
-                <Grid size={{ xs: 12, md: 3 }}>
+                <Grid item xs={12} md={3}>
                     <Paper sx={{ borderRadius: 3, overflow: 'hidden' }}>
                         <Box sx={{ p: 3, bgcolor: '#f8f9fa', textAlign: 'center' }}>
                             <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: '#e1bee7', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
@@ -280,6 +284,28 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
                     {activeTab === 'settings' && (
                         <Box>
                             <Typography variant="h5" fontWeight={700} gutterBottom>Account Settings</Typography>
+
+                            {isAdmin && (
+                                <Paper sx={{ p: 4, mb: 4, borderRadius: 3, bgcolor: 'secondary.light', border: '2px solid', borderColor: 'secondary.main' }}>
+                                    <Typography variant="h6" fontWeight={700} gutterBottom color="secondary.dark">
+                                        🔐 Administrator Access
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" paragraph>
+                                        You have administrator privileges. Access the admin panel to manage products, orders, content, and site settings.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        component={Link}
+                                        to="/admin"
+                                        size="large"
+                                        sx={{ borderRadius: 50, px: 4 }}
+                                    >
+                                        Open Admin Panel
+                                    </Button>
+                                </Paper>
+                            )}
+
                             <Paper sx={{ p: 4, borderRadius: 3 }}>
                                 <Grid container spacing={3}>
                                     <Grid size={{ xs: 12 }}>
