@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Button, Grid, Chip, CircularProgress, Paper, Divider, Tabs, Tab } from '@mui/material';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../context/CartContext';
@@ -76,7 +76,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   if (!product) {
     return (
       <Container sx={{ py: 20, textAlign: 'center' }}>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <Box sx={{ animation: 'fadeIn 1s' }}>
           <Typography variant="h2" sx={{ fontSize: '4rem', mb: 2 }}>🧼</Typography>
           <Typography variant="h4" color="text.secondary" gutterBottom fontWeight={700}>Product Not Found</Typography>
           <Typography variant="body1" mb={4} color="text.secondary">We couldn't find the soap you're looking for.</Typography>
@@ -88,7 +88,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
           >
             Browse All Soaps
           </Button>
-        </motion.div>
+        </Box>
       </Container>
     );
   }
@@ -113,13 +113,10 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
       <Grid container spacing={8}>
         {/* Product Images */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+          <Box sx={{ opacity: 1, transform: 'scale(1)', transition: '0.5s' }}>
             <Paper elevation={0} sx={{ overflow: 'hidden', borderRadius: 4, mb: 2, bgcolor: '#f9f9f9', position: 'relative', paddingTop: '100%' }}>
               <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                <motion.img
-                  key={selectedImage}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <img
                   src={selectedImage || ''}
                   alt={product.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -129,23 +126,23 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
             {images.length > 1 && (
               <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
                 {images.map((img: string, idx: number) => (
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} key={idx}>
+                  <Box key={idx} sx={{ transition: '0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
                     <Box onClick={() => setSelectedImage(img)} sx={{
                       width: 80, height: 80, flexShrink: 0, borderRadius: 2, overflow: 'hidden', cursor: 'pointer',
                       border: selectedImage === img ? '2px solid #2E3B29' : '2px solid transparent', opacity: selectedImage === img ? 1 : 0.6
                     }}>
                       <img src={img} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </Box>
-                  </motion.div>
+                  </Box>
                 ))}
               </Box>
             )}
-          </motion.div>
+          </Box>
         </Grid>
 
         {/* Product Info */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
+          <Box sx={{ opacity: 1, transform: 'translateX(0)', transition: '0.5s' }}>
             <Typography variant="h3" fontWeight={800} gutterBottom color="primary.main">{product.name}</Typography>
             <Chip label="In Stock" color="success" size="small" variant="filled" sx={{ mb: 3, borderRadius: 1 }} />
 
@@ -182,11 +179,9 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                 <Tab label="Shipping" />
               </Tabs>
               <Box sx={{ py: 3, minHeight: 150 }}>
-                <motion.div
+                <Box
                   key={tabIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  sx={{ animation: 'fadeIn 0.5s' }}
                 >
                   {tabIndex === 0 && (
                     <Typography variant="body2" lineHeight={1.8} color="text.secondary">
@@ -214,10 +209,10 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
                       Returns accepted within 30 days of purchase.
                     </Typography>
                   )}
-                </motion.div>
+                </Box>
               </Box>
             </Box>
-          </motion.div>
+          </Box>
         </Grid>
       </Grid>
     </Container>
