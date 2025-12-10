@@ -197,17 +197,10 @@ function Layout({ apiBase }: { apiBase: string }) {
               ))}
               {isAdmin && (
                 <Button component={Link} to="/admin" sx={{ color: 'secondary.main', fontWeight: 600 }}>
+                  Admin
                 </Button>
               )}
-              {/* Dev Helper: Force refresh if they just promoted themselves */}
-              {!isAdmin && (
-                <Button size="small" sx={{ fontSize: '0.7rem', color: 'text.secondary' }} onClick={() => {
-                  localStorage.removeItem('hsw_token');
-                  window.location.href = '/';
-                }}>
-                  Not Admin? Relogin
-                </Button>
-              )}
+
             </Box>
 
             {/* 4. User Actions (Right) */}
