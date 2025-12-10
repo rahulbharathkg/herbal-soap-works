@@ -17,8 +17,40 @@ interface Product {
   images?: string; // JSON string
 }
 
-export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
+// Simple Error Boundary Component
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Container sx={{ py: 10, textAlign: 'center' }}>
+          <Typography variant="h4" color="error" gutterBottom>Something went wrong.</Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>{this.state.error?.message}</Typography>
+          <Button variant="outlined" onClick={() => window.location.reload()}>Reload Page</Button>
+        </Container>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function ProductDetailContent({ apiBase }: { apiBase: string }) {
   const { id } = useParams<{ id: string }>();
+  // ... (rest of the component logic) ...
+  // Keeping existing logic but moved inside this inner component
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +70,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   }, [product]);
 
   useEffect(() => {
+    if (!id) return;
     fetch(`${apiBase}/products/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Product not found');
@@ -59,11 +92,10 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
       })
       .catch(err => {
         console.error('Failed to fetch product:', err);
-        // Do not redirect, show error state
         setProduct(null);
       })
       .finally(() => setLoading(false));
-  }, [apiBase, id, navigate]);
+  }, [apiBase, id]);
 
   if (loading) {
     return (
@@ -216,5 +248,13 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
         </Grid>
       </Grid>
     </Container>
+  );
+}
+
+export default function ProductDetailPage(props: any) {
+  return (
+    <ErrorBoundary>
+      <ProductDetailContent {...props} />
+    </ErrorBoundary>
   );
 }
