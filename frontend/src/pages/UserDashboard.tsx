@@ -121,7 +121,7 @@ export default function UserDashboard({ apiBase }: { apiBase: string }) {
         <Container maxWidth="lg" sx={{ py: 6 }}>
             <Grid container spacing={4}>
                 {/* Sidebar */}
-                <Grid item xs={12} md={3}>
+                <Grid size={{ xs: 12, md: 3 }}>
                     <Paper sx={{ borderRadius: 3, overflow: 'hidden' }}>
                         <Box sx={{ p: 3, bgcolor: '#f8f9fa', textAlign: 'center' }}>
                             <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: '#e1bee7', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
