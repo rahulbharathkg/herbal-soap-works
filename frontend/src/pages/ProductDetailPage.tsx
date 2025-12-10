@@ -178,7 +178,7 @@ function ProductDetailContent({ apiBase }: { apiBase: string }) {
             <Typography variant="h3" fontWeight={800} gutterBottom color="primary.main">{product.name}</Typography>
             <Chip label="In Stock" color="success" size="small" variant="filled" sx={{ mb: 3, borderRadius: 1 }} />
 
-            <Typography variant="h4" color="secondary.main" fontWeight={700} gutterBottom>${product.price.toFixed(2)}</Typography>
+            <Typography variant="h4" color="secondary.main" fontWeight={700} gutterBottom>${Number(product.price).toFixed(2)}</Typography>
 
             <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.8, color: 'text.secondary', mb: 4 }}>
               {cleanDescription}
