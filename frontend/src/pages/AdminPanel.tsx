@@ -20,46 +20,39 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ apiBase }: AdminDashboardProps) {
     const [activeTab, setActiveTab] = useState(0);
-    const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [token, setToken] = useState(localStorage.getItem('hsw_token') || '');
     const [message, setMessage] = useState({ type: '', text: '' });
-    // const navigate = useNavigate();
 
     const BASE_URL = apiBase || process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000/api';
     console.log('AdminDashboard API Base:', BASE_URL);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const res = await fetch(`${BASE_URL}/admin/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.setItem('adminToken', data.token);
-                setToken(data.token);
-                setMessage({ type: 'success', text: 'Logged in successfully' });
-            } else {
-                setMessage({ type: 'error', text: data.message || 'Login failed' });
+    // Check if user is actually an admin
+    useEffect(() => {
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (!payload || payload.role !== 'admin') {
+                    setMessage({ type: 'error', text: 'Access denied: Admin privileges required' });
+                    setToken('');
+                }
+            } catch (e) {
+                setMessage({ type: 'error', text: 'Invalid token' });
+                setToken('');
             }
-        } catch (err) {
-            setMessage({ type: 'error', text: 'Network error' });
         }
-    };
+    }, [token]);
 
     if (!token) {
         return (
-            <Container maxWidth="sm" sx={{ mt: 8 }}>
+            <Container maxWidth="sm" sx={{ mt: 8, textAlign: 'center' }}>
                 <Paper sx={{ p: 4 }}>
-                    <Typography variant="h5" gutterBottom>Admin Login</Typography>
-                    <form onSubmit={handleLogin}>
-                        <TextField fullWidth label="Username" margin="normal" value={username} onChange={e => setUsername(e.target.value)} />
-                        <TextField fullWidth label="Password" type="password" margin="normal" value={password} onChange={e => setPassword(e.target.value)} />
-                        <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>Login</Button>
-                    </form>
+                    <Typography variant="h5" gutterBottom color="error">Access Denied</Typography>
+                    <Typography variant="body1" paragraph>
+                        You need to be logged in as an administrator to access this panel.
+                    </Typography>
+                    <Button variant="contained" onClick={() => window.location.href = '/'}>
+                        Go to Homepage
+                    </Button>
                 </Paper>
                 {message.text && <Snackbar open autoHideDuration={6000} onClose={() => setMessage({ type: '', text: '' })}><Alert severity={message.type as any}>{message.text}</Alert></Snackbar>}
             </Container>
@@ -70,7 +63,10 @@ export default function AdminDashboard({ apiBase }: AdminDashboardProps) {
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4">Admin Dashboard</Typography>
-                <Button onClick={() => { localStorage.removeItem('adminToken'); setToken(''); }}>Logout</Button>
+                <Button onClick={() => {
+                    localStorage.removeItem('hsw_token');
+                    window.location.href = '/';
+                }}>Logout</Button>
             </Box>
 
             <Paper sx={{ width: '100%', mb: 2 }}>
