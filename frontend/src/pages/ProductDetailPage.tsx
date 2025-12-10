@@ -29,7 +29,8 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   const images = React.useMemo(() => {
     if (!product || !product.images) return [];
     try {
-      return JSON.parse(product.images);
+      const parsed = JSON.parse(product.images);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       console.error('Failed to parse images JSON', e);
       return [];
@@ -93,7 +94,7 @@ export default function ProductDetailPage({ apiBase }: { apiBase: string }) {
   }
 
   // Ensure main image is in the list
-  if (product.imageUrl && !images.includes(product.imageUrl)) {
+  if (product.imageUrl && Array.isArray(images) && !images.includes(product.imageUrl)) {
     images.unshift(product.imageUrl);
   }
 
