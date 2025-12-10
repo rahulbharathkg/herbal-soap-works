@@ -197,6 +197,24 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             }
         }
 
+        // --- PROMOTE USER (TEMPORARY) ---
+        if (path === 'admin/promote') {
+            const email = req.query.email as string;
+            if (!email) return res.status(400).json({ error: 'Email required' });
+
+            const userRepo = dataSource.getRepository(User);
+            const user = await userRepo.findOne({ where: { email } });
+
+            if (user) {
+                user.isAdmin = true;
+                user.role = 'admin';
+                await userRepo.save(user);
+                return res.status(200).json({ message: `Promoted ${email} to admin` });
+            } else {
+                return res.status(404).json({ error: 'User not found' });
+            }
+        }
+
         // --- LOGIN/REGISTER ---
         if ((path === 'login' || path.endsWith('login')) && !path.includes('admin') && method === 'POST') {
             const { email, password } = req.body;
