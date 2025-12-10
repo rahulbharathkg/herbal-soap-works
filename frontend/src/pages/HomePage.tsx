@@ -36,43 +36,23 @@ export default function HomePage({ apiBase }: HomePageProps) {
                     {
                         type: 'hero',
                         content: {
-                            title: 'Nature’s Best Kept Secret',
-                            subtitle: 'Handcrafted soaps for a radiant, healthy glow.',
-                            buttonText: 'Shop Collection',
-                            videoUrl: '/images/home/animation1.mp4',
-                            fullHeight: true
-                        }
-                    },
-                    {
-                        type: 'product-grid',
-                        content: {
-                            title: 'Top Selling Soaps',
-                            filter: 'top-selling', // You'll need to handle this filter in PageBlocks/ProductGrid
-                            limit: 3
+                            title: 'Welcome to Herbal Soap Works',
+                            subtitle: 'Natural, Handcrafted Soaps for Radiant Skin',
+                            buttonText: 'Shop Now',
+                            buttonLink: '/products',
+                            videoUrl: '/images/home/animation1.mp4'
                         }
                     },
                     {
                         type: 'feature-panel',
                         content: {
-                            title: 'Special Offer',
-                            subtitle: 'Buy any 3 soaps and get 1 free! Limited time only.',
-                            buttonText: 'View Offers',
-                            link: '/products',
-                            imageUrl: '/images/home/customised.jpg',
-                            reverse: true
-                        }
-                    },
-                    {
-                        type: 'feature-panel',
-                        content: {
-                            title: 'Create Your Custom Soap',
-                            subtitle: 'Choose your ingredients, scent, and style. Made just for you.',
+                            title: 'Create Your Own Soap',
+                            subtitle: 'Customize ingredients, scents, and colors just for you.',
                             buttonText: 'Start Customizing',
                             link: '/custom-soap',
-                            imageUrl: '/images/home/logo.jpg'
+                            imageUrl: '/images/home/customised.jpg'
                         }
-                    },
-                    { type: 'testimonials', content: { title: 'What Our Customers Say' } }
+                    }
                 ]} />
             </Box>
         );
