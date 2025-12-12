@@ -11,6 +11,7 @@ export type Product = {
     description: string;
     price: number;
     imageUrl?: string;
+    images?: string; // JSON string
 };
 
 interface ProductCardProps {
@@ -21,6 +22,34 @@ interface ProductCardProps {
 export default function ProductCard({ product, onView }: ProductCardProps) {
     const { addToCart } = useCart();
     const [isHovered, setIsHovered] = React.useState(false);
+    const [currentImageIdx, setCurrentImageIdx] = React.useState(0);
+
+    // Parse images safely
+    const images = React.useMemo(() => {
+        const imgs = [];
+        if (product.imageUrl) imgs.push(product.imageUrl);
+        if (product.images) {
+            try {
+                const parsed = JSON.parse(product.images);
+                if (Array.isArray(parsed)) {
+                    parsed.forEach(img => {
+                        if (!imgs.includes(img)) imgs.push(img);
+                    });
+                }
+            } catch (e) { }
+        }
+        return imgs.length > 0 ? imgs : [product.imageUrl];
+    }, [product]);
+
+    const handleNextImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentImageIdx((prev) => (prev + 1) % images.length);
+    };
+
+    const handlePrevImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentImageIdx((prev) => (prev - 1 + images.length) % images.length);
+    };
 
     return (
         <motion.div
@@ -49,17 +78,36 @@ export default function ProductCard({ product, onView }: ProductCardProps) {
             >
                 <Box sx={{ position: 'relative', pt: '120%', overflow: 'hidden', bgcolor: '#f5f5f5' }}>
                     <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                        {product.imageUrl ? (
+                        {images[currentImageIdx] ? (
                             <CardMedia
                                 component="img"
-                                image={product.imageUrl}
+                                image={images[currentImageIdx]}
                                 alt={product.name}
-                                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                sx={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.3s' }}
                             />
                         ) : (
                             <ProductPlaceholder height="100%" />
                         )}
                     </Box>
+
+                    {/* Image Navigation Arrows */}
+                    {images.length > 1 && isHovered && (
+                        <>
+                            <Box
+                                onClick={handlePrevImage}
+                                sx={{ position: 'absolute', left: 4, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%', p: 0.5, cursor: 'pointer', '&:hover': { bgcolor: 'white' } }}
+                            >
+                                <Typography variant="caption">◀</Typography>
+                            </Box>
+                            <Box
+                                onClick={handleNextImage}
+                                sx={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%', p: 0.5, cursor: 'pointer', '&:hover': { bgcolor: 'white' } }}
+                            >
+                                <Typography variant="caption">▶</Typography>
+                            </Box>
+                        </>
+                    )}
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
