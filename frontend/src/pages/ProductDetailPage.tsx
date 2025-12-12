@@ -129,7 +129,7 @@ function RelatedProducts({ currentId, apiBase }: { currentId: number, apiBase: s
       <Typography variant="h4" fontWeight={700} gutterBottom mb={4}>You Might Also Like</Typography>
       <Grid container spacing={4}>
         {related.map(p => (
-          <Grid item xs={12} sm={4} key={p.id}>
+          <Grid size={{ xs: 12, sm: 4 }} key={p.id}>
             <Box sx={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${p.id}`)}>
               <Paper elevation={0} sx={{ bgcolor: '#f5f5f5', pt: '100%', position: 'relative', mb: 2, borderRadius: 2 }}>
                 <img
@@ -194,7 +194,7 @@ function ProductDetailContent({ apiBase }: { apiBase: string }) {
         }
 
         // Ensure unique
-        imgs = [...new Set(imgs)];
+        imgs = Array.from(new Set(imgs));
         setMappedImages(imgs);
         setSelectedImage(imgs[0]);
       })

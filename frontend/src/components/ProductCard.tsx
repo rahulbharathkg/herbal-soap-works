@@ -26,7 +26,7 @@ export default function ProductCard({ product, onView }: ProductCardProps) {
 
     // Parse images safely
     const images = React.useMemo(() => {
-        const imgs = [];
+        const imgs: string[] = [];
         if (product.imageUrl) imgs.push(product.imageUrl);
         if (product.images) {
             try {
