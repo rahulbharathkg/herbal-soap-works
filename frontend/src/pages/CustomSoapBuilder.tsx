@@ -13,52 +13,52 @@ import { useNavigate } from 'react-router-dom';
 const STEPS = ['Skin Goals', 'Base', 'Ingredients', 'Nourishing Oils', 'Fragrance', 'Boosters', 'Review'];
 
 const SKIN_GOALS = [
-    { id: 'acne', label: 'Acne Control', icon: '🌿', color: '#e57373' },
-    { id: 'tan', label: 'Tan Removal', icon: '☀️', color: '#ffb74d' },
-    { id: 'soft', label: 'Soft Skin', icon: '☁️', color: '#64b5f6' },
-    { id: 'oil', label: 'Oil Control', icon: '💧', color: '#4db6ac' },
-    { id: 'aging', label: 'Anti-Aging', icon: '⏳', color: '#ba68c8' },
-    { id: 'glow', label: 'Radiant Glow', icon: '✨', color: '#ffd54f' },
+    { id: 'acne', label: 'Acne Control', img: 'https://images.unsplash.com/photo-1598440947619-2c35fc9b0717?auto=format&fit=crop&w=300&q=80', color: '#e57373' }, // Girl with patches/cream
+    { id: 'tan', label: 'Tan Removal', img: 'https://images.unsplash.com/photo-1552046122-03184de85e08?auto=format&fit=crop&w=300&q=80', color: '#ffb74d' }, // Glowing skin in sun
+    { id: 'soft', label: 'Soft Skin', img: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=300&q=80', color: '#64b5f6' }, // Soft texture
+    { id: 'oil', label: 'Oil Control', img: 'https://images.unsplash.com/photo-1519415510236-718bdfcd4788?auto=format&fit=crop&w=300&q=80', color: '#4db6ac' }, // Clean face splash
+    { id: 'aging', label: 'Anti-Aging', img: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=300&q=80', color: '#ba68c8' }, // Mature/Elegant
+    { id: 'glow', label: 'Radiant Glow', img: 'https://images.unsplash.com/photo-1556228552-52a198950d20?auto=format&fit=crop&w=300&q=80', color: '#ffd54f' }, // Highlighter/Glow
 ];
 
 const BASES = [
-    { id: 'goat_milk', label: 'Goat Milk', price: 100, desc: 'Rich in vitamins, gentle cleanser.', img: 'https://placehold.co/150x150/FFFDD0/333?text=Goat+Milk' },
-    { id: 'glycerine', label: 'Glycerine', price: 90, desc: 'Hydrating and clear base.', img: 'https://placehold.co/150x150/e0f7fa/333?text=Glycerine' },
-    { id: 'aloe', label: 'Aloe Vera', price: 110, desc: 'Soothing and healing.', img: 'https://placehold.co/150x150/c8e6c9/333?text=Aloe+Vera' },
-    { id: 'shea', label: 'Shea Butter', price: 120, desc: 'Deeply moisturizing.', img: 'https://placehold.co/150x150/efebe9/333?text=Shea+Butter' },
+    { id: 'goat_milk', label: 'Goat Milk', price: 100, desc: 'Rich in vitamins, gentle cleanser.', img: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&w=150&q=80' },
+    { id: 'glycerine', label: 'Glycerine', price: 90, desc: 'Hydrating and clear base.', img: 'https://images.unsplash.com/photo-1585232064500-2f95fb61ea6e?auto=format&fit=crop&w=150&q=80' },
+    { id: 'aloe', label: 'Aloe Vera', price: 110, desc: 'Soothing and healing.', img: 'https://images.unsplash.com/photo-1567683633890-448cb5a3cb5b?auto=format&fit=crop&w=150&q=80' },
+    { id: 'shea', label: 'Shea Butter', price: 120, desc: 'Deeply moisturizing.', img: 'https://plus.unsplash.com/premium_photo-1675283451557-4188b88fc7c0?auto=format&fit=crop&w=150&q=80' },
 ];
 
 const INGREDIENTS = [
-    { id: 'wine', label: 'Red Wine', price: 30, desc: 'Anti-oxidant rich, anti-aging.', img: 'https://placehold.co/100x100/880e4f/fff?text=Wine' },
-    { id: 'charcoal', label: 'Activated Charcoal', price: 25, desc: 'Detoxifies and cleans pores.', img: 'https://placehold.co/100x100/212121/fff?text=Charcoal' },
-    { id: 'sandalwood', label: 'Sandalwood', price: 40, desc: 'Brightening and cooling.', img: 'https://placehold.co/100x100/d7ccc8/333?text=Sandal' },
-    { id: 'manjistha', label: 'Manjistha', price: 35, desc: 'Skin brightening herb.', img: 'https://placehold.co/100x100/b71c1c/fff?text=Manjistha' },
-    { id: 'coffee', label: 'Coffee', price: 20, desc: 'Exfoliating and energizing.', img: 'https://placehold.co/100x100/3e2723/fff?text=Coffee' },
-    { id: 'neem', label: 'Neem', price: 20, desc: 'Antibacterial and purifying.', img: 'https://placehold.co/100x100/388e3c/fff?text=Neem' },
-    { id: 'honey', label: 'Honey', price: 25, desc: 'Natural humectant.', img: 'https://placehold.co/100x100/ffecb3/333?text=Honey' },
-    { id: 'multani', label: 'Multani Mitti', price: 15, desc: 'Oil absorption.', img: 'https://placehold.co/100x100/d7ccc8/333?text=Multani' },
+    { id: 'wine', label: 'Red Wine', price: 30, desc: 'Anti-oxidant rich, anti-aging.', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=150&q=80' },
+    { id: 'charcoal', label: 'Activated Charcoal', price: 25, desc: 'Detoxifies and cleans pores.', img: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=150&q=80' }, // Dark texture
+    { id: 'sandalwood', label: 'Sandalwood', price: 40, desc: 'Brightening and cooling.', img: 'https://plus.unsplash.com/premium_photo-1675271813132-723a1c5d0016?auto=format&fit=crop&w=150&q=80' },
+    { id: 'manjistha', label: 'Manjistha', price: 35, desc: 'Skin brightening herb.', img: 'https://images.unsplash.com/photo-1615485499978-508535a63968?auto=format&fit=crop&w=150&q=80' }, // Red powder/herb
+    { id: 'coffee', label: 'Coffee', price: 20, desc: 'Exfoliating and energizing.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=150&q=80' },
+    { id: 'neem', label: 'Neem', price: 20, desc: 'Antibacterial and purifying.', img: 'https://images.unsplash.com/photo-1599407335752-6a84d436151c?auto=format&fit=crop&w=150&q=80' }, // Green leaves
+    { id: 'honey', label: 'Honey', price: 25, desc: 'Natural humectant.', img: 'https://images.unsplash.com/photo-1587049352851-8d4e89186eff?auto=format&fit=crop&w=150&q=80' },
+    { id: 'multani', label: 'Multani Mitti', price: 15, desc: 'Oil absorption.', img: 'https://plus.unsplash.com/premium_photo-1675402094895-3ca325712530?auto=format&fit=crop&w=150&q=80' }, // Clay
 ];
 
 const OILS = [
-    { id: 'almond', label: 'Almond Oil', price: 30, desc: 'Vitamin E rich.', img: 'https://placehold.co/100x100/ffe0b2/333?text=Almond' },
-    { id: 'coconut', label: 'Coconut Oil', price: 20, desc: 'Deeply nourishing.', img: 'https://placehold.co/100x100/e0f7fa/333?text=Coconut' },
-    { id: 'olive', label: 'Olive Oil', price: 25, desc: 'Moisturizing.', img: 'https://placehold.co/100x100/f0f4c3/333?text=Olive' },
-    { id: 'castor', label: 'Castor Oil', price: 20, desc: 'Promotes healing.', img: 'https://placehold.co/100x100/fff3e0/333?text=Castor' },
+    { id: 'almond', label: 'Almond Oil', price: 30, desc: 'Vitamin E rich.', img: 'https://images.unsplash.com/photo-1617424682055-6b5cf0d080f5?auto=format&fit=crop&w=150&q=80' },
+    { id: 'coconut', label: 'Coconut Oil', price: 20, desc: 'Deeply nourishing.', img: 'https://images.unsplash.com/photo-1599298708304-749e49bef345?auto=format&fit=crop&w=150&q=80' },
+    { id: 'olive', label: 'Olive Oil', price: 25, desc: 'Moisturizing.', img: 'https://images.unsplash.com/photo-1474979266404-7cadd259d3d2?auto=format&fit=crop&w=150&q=80' },
+    { id: 'castor', label: 'Castor Oil', price: 20, desc: 'Promotes healing.', img: 'https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?auto=format&fit=crop&w=150&q=80' }, // Oil bottle
 ];
 
 const FRAGRANCES = [
-    { id: 'sandal_oil', label: 'Sandalwood Oil', price: 50, desc: 'Classic woody scent.', img: 'https://placehold.co/100x100/d7ccc8/333?text=Sandal+Oil' },
-    { id: 'vanilla', label: 'Vanilla', price: 40, desc: 'Sweet and comforting.', img: 'https://placehold.co/100x100/fff8e1/333?text=Vanilla' },
-    { id: 'rose', label: 'Rose', price: 45, desc: 'Floral and romantic.', img: 'https://placehold.co/100x100/f8bbd0/333?text=Rose' },
-    { id: 'lavender', label: 'Lavender', price: 40, desc: 'Calming and relaxing.', img: 'https://placehold.co/100x100/d1c4e9/333?text=Lavender' },
-    { id: 'tea_tree', label: 'Tea Tree', price: 35, desc: 'Medicinal and fresh.', img: 'https://placehold.co/100x100/b2dfdb/333?text=Tea+Tree' },
+    { id: 'sandal_oil', label: 'Sandalwood Oil', price: 50, desc: 'Classic woody scent.', img: 'https://plus.unsplash.com/premium_photo-1675271813132-723a1c5d0016?auto=format&fit=crop&w=150&q=80' },
+    { id: 'vanilla', label: 'Vanilla', price: 40, desc: 'Sweet and comforting.', img: 'https://images.unsplash.com/photo-1606132777176-6c1743f54d4f?auto=format&fit=crop&w=150&q=80' },
+    { id: 'rose', label: 'Rose', price: 45, desc: 'Floral and romantic.', img: 'https://images.unsplash.com/photo-1559563362-c667ca5f5418?auto=format&fit=crop&w=150&q=80' },
+    { id: 'lavender', label: 'Lavender', price: 40, desc: 'Calming and relaxing.', img: 'https://images.unsplash.com/photo-1595166687060-72ee9832c382?auto=format&fit=crop&w=150&q=80' },
+    { id: 'tea_tree', label: 'Tea Tree', price: 35, desc: 'Medicinal and fresh.', img: 'https://images.unsplash.com/photo-1598273615467-f4e912f20bd6?auto=format&fit=crop&w=150&q=80' }, // Tea tree
 ];
 
 const BOOSTERS = [
-    { id: 'retinol', label: 'Retinol', price: 150, desc: 'Anti-aging powerhouse.', img: 'https://placehold.co/100x100/ce93d8/fff?text=Retinol' },
-    { id: 'hyaluronic', label: 'Hyaluronic Acid', price: 120, desc: 'Intense hydration.', img: 'https://placehold.co/100x100/e1f5fe/333?text=Hyaluronic' },
-    { id: 'niacinamide', label: 'Niacinamide', price: 100, desc: 'Pore refining.', img: 'https://placehold.co/100x100/f3e5f5/333?text=Niacinamide' },
-    { id: 'vit_e', label: 'Vitamin E', price: 80, desc: 'Skin repair.', img: 'https://placehold.co/100x100/fff9c4/333?text=Vit+E' },
+    { id: 'retinol', label: 'Retinol', price: 150, desc: 'Anti-aging powerhouse.', img: 'https://images.unsplash.com/photo-1583099955845-77983617be33?auto=format&fit=crop&w=150&q=80' }, // Serum bottle
+    { id: 'hyaluronic', label: 'Hyaluronic Acid', price: 120, desc: 'Intense hydration.', img: 'https://images.unsplash.com/photo-1608677464195-2d4e78a63583?auto=format&fit=crop&w=150&q=80' }, // Dropper
+    { id: 'niacinamide', label: 'Niacinamide', price: 100, desc: 'Pore refining.', img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=150&q=80' }, // White serum
+    { id: 'vit_e', label: 'Vitamin E', price: 80, desc: 'Skin repair.', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150&q=80' }, // Softgels
 ];
 
 export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
@@ -122,7 +122,7 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
             id: `custom-${Date.now()}`,
             name: customName || 'Custom Herbal Soap',
             price: total,
-            imageUrl: 'https://placehold.co/600x400/e0c3fc/4a148c?text=Custom+Soap',
+            imageUrl: BASES.find(b => b.id === selections.base)?.img || 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&w=400&q=80',
             description: description,
             quantity: 1
         });
@@ -140,7 +140,7 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
                                     selected={selections.goals.includes(goal.id)}
                                     onClick={() => handleToggle('goals', goal.id)}
                                     title={goal.label}
-                                    icon={goal.icon}
+                                    img={goal.img}
                                     color={goal.color}
                                 />
                             </Grid>
@@ -343,7 +343,7 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
                                         {INGREDIENTS.find(item => item.id === id)?.label.charAt(0)}
                                     </motion.div>
                                 ))}
-                                <img src="https://placehold.co/600x400/e0c3fc/4a148c?text=Soap+Mix" alt="Soap Mix" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
+                                <img src="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&w=600&q=80" alt="Soap Mix" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }} />
                             </Box>
                         </Box>
                         <CardContent>
@@ -368,23 +368,32 @@ export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
     );
 }
 
-function SelectionCard({ selected, onClick, title, icon, color }: any) {
+function SelectionCard({ selected, onClick, title, img, color }: any) {
     return (
         <Card
             onClick={onClick}
             sx={{
                 cursor: 'pointer',
                 border: selected ? `2px solid ${color}` : '2px solid transparent',
-                bgcolor: selected ? `${color}22` : 'background.paper',
-                transition: 'all 0.2s',
-                textAlign: 'center',
-                p: 2,
-                borderRadius: 3
+                borderRadius: 4,
+                overflow: 'hidden',
+                position: 'relative',
+                height: 180,
+                transition: 'all 0.3s',
+                '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 }
             }}
         >
-            <Typography variant="h2">{icon}</Typography>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 1 }}>{title}</Typography>
-            {selected && <CheckCircleIcon sx={{ color, position: 'absolute', top: 8, right: 8 }} />}
+            <CardMedia
+                component="img"
+                height="100%"
+                image={img}
+                alt={title}
+                sx={{ filter: selected ? 'brightness(0.7)' : 'brightness(1)', transition: '0.3s' }}
+            />
+            <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', p: 2 }}>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>{title}</Typography>
+            </Box>
+            {selected && <CheckCircleIcon sx={{ color: 'white', position: 'absolute', top: 8, right: 8, zIndex: 2 }} />}
         </Card>
     );
 }
@@ -404,7 +413,7 @@ function ProductCard({ selected, onClick, item }: any) {
                 borderRadius: 3
             }}
         >
-            <CardMedia component="img" height="100" image={item.img} alt={item.label} />
+            <CardMedia component="img" height="120" image={item.img} alt={item.label} />
             <CardContent sx={{ flexGrow: 1, p: 1.5 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{item.label}</Typography>
                 <Typography variant="caption" color="text.secondary" display="block">{item.desc}</Typography>
