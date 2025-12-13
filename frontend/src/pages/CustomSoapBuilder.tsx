@@ -13,52 +13,52 @@ import { useNavigate } from 'react-router-dom';
 const STEPS = ['Skin Goals', 'Base', 'Ingredients', 'Nourishing Oils', 'Fragrance', 'Boosters', 'Review'];
 
 const SKIN_GOALS = [
-    { id: 'acne', label: 'Acne Control', img: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=300&q=80', color: '#e57373' }, // Charcoal/Neem texture (Natural cleansing)
-    { id: 'tan', label: 'Tan Removal', img: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=300&q=80', color: '#ffb74d' }, // Bright citrus/sun concept
-    { id: 'soft', label: 'Soft Skin', img: 'https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?auto=format&fit=crop&w=300&q=80', color: '#64b5f6' }, // Creamy lather/foam texture
-    { id: 'oil', label: 'Oil Control', img: 'https://images.unsplash.com/photo-1550503043-45bee04f63c8?auto=format&fit=crop&w=300&q=80', color: '#4db6ac' }, // Fresh water splash/cucumber
-    { id: 'aging', label: 'Anti-Aging', img: 'https://images.unsplash.com/photo-1526435882660-f3b61cb9431e?auto=format&fit=crop&w=300&q=80', color: '#ba68c8' }, // Orchid/Floral elegance
-    { id: 'glow', label: 'Radiant Glow', img: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=300&q=80', color: '#ffd54f' }, // Golden oil/honey texture
+    { id: 'acne', label: 'Acne Control', img: '/images/custom/goal-acne.jpg', color: '#e57373' }, // Charcoal/Neem texture (Natural cleansing)
+    { id: 'tan', label: 'Tan Removal', img: '/images/custom/goal-tan.jpg', color: '#ffb74d' }, // Bright citrus/sun concept
+    { id: 'soft', label: 'Soft Skin', img: '/images/custom/goal-soft.jpg', color: '#64b5f6' }, // Creamy lather/foam texture
+    { id: 'oil', label: 'Oil Control', img: '/images/custom/goal-oil.jpg', color: '#4db6ac' }, // Fresh water splash/cucumber
+    { id: 'aging', label: 'Anti-Aging', img: '/images/custom/goal-aging.jpg', color: '#ba68c8' }, // Orchid/Floral elegance
+    { id: 'glow', label: 'Radiant Glow', img: '/images/custom/goal-glow.jpg', color: '#ffd54f' }, // Golden oil/honey texture
 ];
 
 const BASES = [
-    { id: 'goat_milk', label: 'Goat Milk', price: 100, desc: 'Rich in vitamins, gentle cleanser.', img: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=150&q=80' }, // Milk splash
-    { id: 'glycerine', label: 'Glycerine', price: 90, desc: 'Hydrating and clear base.', img: 'https://images.unsplash.com/photo-1609176046029-7c15104d4128?auto=format&fit=crop&w=150&q=80' }, // Clear water/droplet
-    { id: 'aloe', label: 'Aloe Vera', price: 110, desc: 'Soothing and healing.', img: 'https://images.unsplash.com/photo-1596046124845-a75d50220641?auto=format&fit=crop&w=150&q=80' }, // Fresh Aloe leaf slice
-    { id: 'shea', label: 'Shea Butter', price: 120, desc: 'Deeply moisturizing.', img: 'https://images.unsplash.com/photo-1627932640245-c1bc6be51413?auto=format&fit=crop&w=150&q=80' }, // Creamy butter texture
+    { id: 'goat_milk', label: 'Goat Milk', price: 100, desc: 'Rich in vitamins, gentle cleanser.', img: '/images/custom/base-goat.jpg' }, // Milk splash
+    { id: 'glycerine', label: 'Glycerine', price: 90, desc: 'Hydrating and clear base.', img: '/images/custom/base-glyc.jpg' }, // Clear water/droplet
+    { id: 'aloe', label: 'Aloe Vera', price: 110, desc: 'Soothing and healing.', img: '/images/custom/base-aloe.jpg' }, // Fresh Aloe leaf slice
+    { id: 'shea', label: 'Shea Butter', price: 120, desc: 'Deeply moisturizing.', img: '/images/custom/base-shea.jpg' }, // Creamy butter texture
 ];
 
 const INGREDIENTS = [
-    { id: 'wine', label: 'Red Wine', price: 30, desc: 'Anti-oxidant rich, anti-aging.', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=150&q=80' },
-    { id: 'charcoal', label: 'Activated Charcoal', price: 25, desc: 'Detoxifies and cleans pores.', img: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=150&q=80' },
-    { id: 'sandalwood', label: 'Sandalwood', price: 40, desc: 'Brightening and cooling.', img: 'https://plus.unsplash.com/premium_photo-1675271813132-723a1c5d0016?auto=format&fit=crop&w=150&q=80' },
-    { id: 'manjistha', label: 'Manjistha', price: 35, desc: 'Skin brightening herb.', img: 'https://images.unsplash.com/photo-1621256707328-76508c93540e?auto=format&fit=crop&w=150&q=80' }, // Red powder/roots
-    { id: 'coffee', label: 'Coffee', price: 20, desc: 'Exfoliating and energizing.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=150&q=80' },
-    { id: 'neem', label: 'Neem', price: 20, desc: 'Antibacterial and purifying.', img: 'https://images.unsplash.com/photo-1599407335752-6a84d436151c?auto=format&fit=crop&w=150&q=80' },
-    { id: 'honey', label: 'Honey', price: 25, desc: 'Natural humectant.', img: 'https://images.unsplash.com/photo-1587049352851-8d4e89186eff?auto=format&fit=crop&w=150&q=80' },
-    { id: 'multani', label: 'Multani Mitti', price: 15, desc: 'Oil absorption.', img: 'https://plus.unsplash.com/premium_photo-1675402094895-3ca325712530?auto=format&fit=crop&w=150&q=80' },
+    { id: 'wine', label: 'Red Wine', price: 30, desc: 'Anti-oxidant rich, anti-aging.', img: '/images/custom/ing-wine.jpg' },
+    { id: 'charcoal', label: 'Activated Charcoal', price: 25, desc: 'Detoxifies and cleans pores.', img: '/images/custom/ing-char.jpg' },
+    { id: 'sandalwood', label: 'Sandalwood', price: 40, desc: 'Brightening and cooling.', img: '/images/custom/ing-sand.jpg' },
+    { id: 'manjistha', label: 'Manjistha', price: 35, desc: 'Skin brightening herb.', img: '/images/custom/ing-manj.jpg' }, // Red powder/roots
+    { id: 'coffee', label: 'Coffee', price: 20, desc: 'Exfoliating and energizing.', img: '/images/custom/ing-coff.jpg' },
+    { id: 'neem', label: 'Neem', price: 20, desc: 'Antibacterial and purifying.', img: '/images/custom/ing-neem.jpg' },
+    { id: 'honey', label: 'Honey', price: 25, desc: 'Natural humectant.', img: '/images/custom/ing-honey.jpg' },
+    { id: 'multani', label: 'Multani Mitti', price: 15, desc: 'Oil absorption.', img: '/images/custom/ing-mult.jpg' },
 ];
 
 const OILS = [
-    { id: 'almond', label: 'Almond Oil', price: 30, desc: 'Vitamin E rich.', img: 'https://images.unsplash.com/photo-1620917670397-a3313437ee8f?auto=format&fit=crop&w=150&q=80' }, // Oil drop
-    { id: 'coconut', label: 'Coconut Oil', price: 20, desc: 'Deeply nourishing.', img: 'https://images.unsplash.com/photo-1599298708304-749e49bef345?auto=format&fit=crop&w=150&q=80' },
-    { id: 'olive', label: 'Olive Oil', price: 25, desc: 'Moisturizing.', img: 'https://images.unsplash.com/photo-1474979266404-7cadd259d3d2?auto=format&fit=crop&w=150&q=80' },
-    { id: 'castor', label: 'Castor Oil', price: 20, desc: 'Promotes healing.', img: 'https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?auto=format&fit=crop&w=150&q=80' },
+    { id: 'almond', label: 'Almond Oil', price: 30, desc: 'Vitamin E rich.', img: '/images/custom/oil-alm.jpg' }, // Oil drop
+    { id: 'coconut', label: 'Coconut Oil', price: 20, desc: 'Deeply nourishing.', img: '/images/custom/oil-coco.jpg' },
+    { id: 'olive', label: 'Olive Oil', price: 25, desc: 'Moisturizing.', img: '/images/custom/oil-oliv.jpg' },
+    { id: 'castor', label: 'Castor Oil', price: 20, desc: 'Promotes healing.', img: '/images/custom/oil-cast.jpg' },
 ];
 
 const FRAGRANCES = [
-    { id: 'sandal_oil', label: 'Sandalwood Oil', price: 50, desc: 'Classic woody scent.', img: 'https://plus.unsplash.com/premium_photo-1675271813132-723a1c5d0016?auto=format&fit=crop&w=150&q=80' },
-    { id: 'vanilla', label: 'Vanilla', price: 40, desc: 'Sweet and comforting.', img: 'https://images.unsplash.com/photo-1606132777176-6c1743f54d4f?auto=format&fit=crop&w=150&q=80' },
-    { id: 'rose', label: 'Rose', price: 45, desc: 'Floral and romantic.', img: 'https://images.unsplash.com/photo-1559563362-c667ca5f5418?auto=format&fit=crop&w=150&q=80' },
-    { id: 'lavender', label: 'Lavender', price: 40, desc: 'Calming and relaxing.', img: 'https://images.unsplash.com/photo-1595166687060-72ee9832c382?auto=format&fit=crop&w=150&q=80' },
-    { id: 'tea_tree', label: 'Tea Tree', price: 35, desc: 'Medicinal and fresh.', img: 'https://images.unsplash.com/photo-1598273615467-f4e912f20bd6?auto=format&fit=crop&w=150&q=80' },
+    { id: 'sandal_oil', label: 'Sandalwood Oil', price: 50, desc: 'Classic woody scent.', img: '/images/custom/frag-sand.jpg' },
+    { id: 'vanilla', label: 'Vanilla', price: 40, desc: 'Sweet and comforting.', img: '/images/custom/frag-van.jpg' },
+    { id: 'rose', label: 'Rose', price: 45, desc: 'Floral and romantic.', img: '/images/custom/frag-rose.jpg' },
+    { id: 'lavender', label: 'Lavender', price: 40, desc: 'Calming and relaxing.', img: '/images/custom/frag-lav.jpg' },
+    { id: 'tea_tree', label: 'Tea Tree', price: 35, desc: 'Medicinal and fresh.', img: '/images/custom/frag-tea.jpg' },
 ];
 
 const BOOSTERS = [
-    { id: 'retinol', label: 'Retinol', price: 150, desc: 'Anti-aging powerhouse.', img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=150&q=80' }, // Elegant serum drop
-    { id: 'hyaluronic', label: 'Hyaluronic Acid', price: 120, desc: 'Intense hydration.', img: 'https://images.unsplash.com/photo-1608677464195-2d4e78a63583?auto=format&fit=crop&w=150&q=80' }, // Texture focus
-    { id: 'niacinamide', label: 'Niacinamide', price: 100, desc: 'Pore refining.', img: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=150&q=80' }, // Fresh clean look
-    { id: 'vit_e', label: 'Vitamin E', price: 80, desc: 'Skin repair.', img: 'https://images.unsplash.com/photo-1615484477780-3f95038ecf5f?auto=format&fit=crop&w=150&q=80' }, // Golden oil texture, NOT pills
+    { id: 'retinol', label: 'Retinol', price: 150, desc: 'Anti-aging powerhouse.', img: '/images/custom/boost-ret.jpg' }, // Elegant serum drop
+    { id: 'hyaluronic', label: 'Hyaluronic Acid', price: 120, desc: 'Intense hydration.', img: '/images/custom/boost-hya.jpg' }, // Texture focus
+    { id: 'niacinamide', label: 'Niacinamide', price: 100, desc: 'Pore refining.', img: '/images/custom/boost-nia.jpg' }, // Fresh clean look
+    { id: 'vit_e', label: 'Vitamin E', price: 80, desc: 'Skin repair.', img: '/images/custom/boost-vit.jpg' }, // Golden oil texture, NOT pills
 ];
 
 export default function CustomSoapBuilder({ apiBase }: { apiBase: string }) {
